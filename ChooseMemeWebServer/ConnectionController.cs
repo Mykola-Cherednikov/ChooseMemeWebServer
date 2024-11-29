@@ -1,12 +1,24 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ChooseMemeWebServer.Interfaces;
+using ChooseMemeWebServer.Models;
+using ChooseMemeWebServer.Services;
+using Microsoft.AspNetCore.Mvc;
 using System.Net.WebSockets;
+using System.Text;
 
 namespace ChooseMemeWebServer
 {
     public class ConnectionController : ControllerBase
     {
+        private readonly IServiceProvider _serviceProvider;
+
+        public ConnectionController(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
+
         [Route("/wsClient")]
-        public async Task<IActionResult> ClientConntect(string username, string lobbyCode)
+        public async Task<IActionResult> ClientConnect(string username, string lobbyCode)
         {
             if (HttpContext.WebSockets.IsWebSocketRequest)
             {
@@ -22,9 +34,21 @@ namespace ChooseMemeWebServer
 
                 using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
 
-                // TODO: Add Client to lobby connection
+                Player player = new Player()
+                {
+                    Username = username,
+                    WebSocket = webSocket
+                };
 
-                await Listen(webSocket);
+                Lobby lobby = null!;
+
+                using (var scope = _serviceProvider.CreateScope())
+                {
+                    var lobbyService = scope.ServiceProvider.GetRequiredService<ILobbyService>();
+                    lobby = lobbyService.ConnectToLobby(lobbyCode, player);
+                }
+
+                await ListenClient(player, lobby);
                 return Ok();
             }
             else
@@ -40,9 +64,16 @@ namespace ChooseMemeWebServer
             {
                 using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
 
-                // TODO: Add Server lobby creation
+                using (var scope = _serviceProvider.CreateScope())
+                {
+                    var lobbyService = scope.ServiceProvider.GetRequiredService<ILobbyService>();
+                    if (!lobbyService.TryCreateLobby(webSocket))
+                    {
+                        return BadRequest("Error in lobby creation");
+                    }
+                }
 
-                await Listen(webSocket);
+                await MaintenanceServerConnection(webSocket);
                 return Ok();
             }
             else
@@ -51,21 +82,46 @@ namespace ChooseMemeWebServer
             }
         }
 
-        private static async Task Listen(WebSocket webSocket)
+        private async Task ListenClient(Player player, Lobby lobby)
         {
-            var buffer = new byte[1024 * 4];
-            var receiveResult = new WebSocketReceiveResult(0, WebSocketMessageType.Text, true);
+            WebSocketCloseStatus? closeStatus = null;
 
-            while (!receiveResult.CloseStatus.HasValue)
+            using (var scope = _serviceProvider.CreateScope())
             {
-                receiveResult = await webSocket.ReceiveAsync(buffer, CancellationToken.None);
+                var commandHandler = scope.ServiceProvider.GetRequiredService<IWebSocketCommandHandler>();
 
-                // TODO: Add Websocket command handler
+                while (!player.WebSocket.CloseStatus.HasValue)
+                {
+                    var buffer = new byte[1024 * 4];
+                    var receiveResult = await player.WebSocket.ReceiveAsync(buffer, CancellationToken.None);
+
+                    if (receiveResult.MessageType == WebSocketMessageType.Close)
+                    {
+                        continue;
+                    }
+
+                    string message = Encoding.UTF8.GetString(buffer);
+
+                    commandHandler.Handle(message, player, lobby);
+                }
+            }
+
+            await player.WebSocket.CloseAsync(
+                player.WebSocket.CloseStatus.Value,
+                player.WebSocket.CloseStatusDescription,
+                CancellationToken.None);
+        }
+
+        private async Task MaintenanceServerConnection(WebSocket webSocket)
+        {
+            while (!webSocket.CloseStatus.HasValue)
+            {
+                await Task.Delay(1000);
             }
 
             await webSocket.CloseAsync(
-                receiveResult.CloseStatus.Value,
-                receiveResult.CloseStatusDescription,
+                webSocket.CloseStatus.Value,
+                webSocket.CloseStatusDescription,
                 CancellationToken.None);
         }
     }
