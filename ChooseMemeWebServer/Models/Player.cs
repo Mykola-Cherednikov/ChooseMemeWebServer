@@ -9,5 +9,7 @@ namespace ChooseMemeWebServer.Models
         public Lobby Lobby { get; set; } = null!;
 
         public WebSocket WebSocket { get; set; } = null!;
+
+        public bool IsReady { get; set; } = false;
     }
 }

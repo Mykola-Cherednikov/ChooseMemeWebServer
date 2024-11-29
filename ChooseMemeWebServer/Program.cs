@@ -6,8 +6,9 @@ namespace ChooseMemeWebServer
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddControllers();
-            var app = builder.Build();
+            builder.Services.AddMediatR(options => options.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()));
 
+            var app = builder.Build();
             app.UseWebSockets();
             app.MapControllers();
             app.Run();

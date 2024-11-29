@@ -1,6 +1,5 @@
 ﻿using ChooseMemeWebServer.Interfaces;
 using ChooseMemeWebServer.Models;
-using ChooseMemeWebServer.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.WebSockets;
 using System.Text;
@@ -9,11 +8,13 @@ namespace ChooseMemeWebServer
 {
     public class ConnectionController : ControllerBase
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly ILobbyService _lobbyService;
+        private readonly IWebSocketCommandHandler _commandHandler;
 
-        public ConnectionController(IServiceProvider serviceProvider)
+        public ConnectionController(ILobbyService lobbyService, IWebSocketCommandHandler commandHandler)
         {
-            _serviceProvider = serviceProvider;
+            _lobbyService = lobbyService;
+            _commandHandler = commandHandler;
         }
 
 
@@ -42,11 +43,7 @@ namespace ChooseMemeWebServer
 
                 Lobby lobby = null!;
 
-                using (var scope = _serviceProvider.CreateScope())
-                {
-                    var lobbyService = scope.ServiceProvider.GetRequiredService<ILobbyService>();
-                    lobby = lobbyService.ConnectToLobby(lobbyCode, player);
-                }
+                lobby = _lobbyService.ConnectToLobby(lobbyCode, player);
 
                 await ListenClient(player, lobby);
                 return Ok();
@@ -64,13 +61,9 @@ namespace ChooseMemeWebServer
             {
                 using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
 
-                using (var scope = _serviceProvider.CreateScope())
+                if (!_lobbyService.TryCreateLobby(webSocket))
                 {
-                    var lobbyService = scope.ServiceProvider.GetRequiredService<ILobbyService>();
-                    if (!lobbyService.TryCreateLobby(webSocket))
-                    {
-                        return BadRequest("Error in lobby creation");
-                    }
+                    return BadRequest("Error in lobby creation");
                 }
 
                 await MaintenanceServerConnection(webSocket);
@@ -84,26 +77,19 @@ namespace ChooseMemeWebServer
 
         private async Task ListenClient(Player player, Lobby lobby)
         {
-            WebSocketCloseStatus? closeStatus = null;
-
-            using (var scope = _serviceProvider.CreateScope())
+            while (!player.WebSocket.CloseStatus.HasValue)
             {
-                var commandHandler = scope.ServiceProvider.GetRequiredService<IWebSocketCommandHandler>();
+                var buffer = new byte[1024 * 4];
+                var receiveResult = await player.WebSocket.ReceiveAsync(buffer, CancellationToken.None);
 
-                while (!player.WebSocket.CloseStatus.HasValue)
+                if (receiveResult.MessageType == WebSocketMessageType.Close)
                 {
-                    var buffer = new byte[1024 * 4];
-                    var receiveResult = await player.WebSocket.ReceiveAsync(buffer, CancellationToken.None);
-
-                    if (receiveResult.MessageType == WebSocketMessageType.Close)
-                    {
-                        continue;
-                    }
-
-                    string message = Encoding.UTF8.GetString(buffer);
-
-                    commandHandler.Handle(message, player, lobby);
+                    continue;
                 }
+
+                string message = Encoding.UTF8.GetString(buffer);
+
+                _commandHandler.Handle(message, player, lobby);
             }
 
             await player.WebSocket.CloseAsync(
