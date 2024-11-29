@@ -1,10 +1,10 @@
-﻿using ChooseMemeWebServer.Interfaces;
-using ChooseMemeWebServer.Models;
+﻿using ChooseMemeWebServer.Core.Interfaces;
+using ChooseMemeWebServer.Domain.Extentions;
+using ChooseMemeWebServer.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.WebSockets;
-using System.Text;
 
-namespace ChooseMemeWebServer
+namespace ChooseMemeWebServer.UI.Controllers
 {
     public class ConnectionController : ControllerBase
     {
@@ -79,17 +79,14 @@ namespace ChooseMemeWebServer
         {
             while (!player.WebSocket.CloseStatus.HasValue)
             {
-                var buffer = new byte[1024 * 4];
-                var receiveResult = await player.WebSocket.ReceiveAsync(buffer, CancellationToken.None);
+                var receiveResult = await player.WebSocket.ReadFromWebSocket();
 
                 if (receiveResult.MessageType == WebSocketMessageType.Close)
                 {
                     continue;
                 }
 
-                string message = Encoding.UTF8.GetString(buffer);
-
-                _commandHandler.Handle(message, player, lobby);
+                _commandHandler.Handle(receiveResult.Message, player, lobby);
             }
 
             await player.WebSocket.CloseAsync(

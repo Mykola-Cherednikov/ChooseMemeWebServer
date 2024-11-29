@@ -1,7 +1,6 @@
-﻿using ChooseMemeWebServer.Models;
-using System.Net.WebSockets;
+﻿using ChooseMemeWebServer.Domain.Models;
 
-namespace ChooseMemeWebServer.Interfaces
+namespace ChooseMemeWebServer.Core.Interfaces
 {
     public interface IWebSocketCommandHandler
     {

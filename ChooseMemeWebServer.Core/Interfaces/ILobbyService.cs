@@ -1,7 +1,7 @@
-﻿using ChooseMemeWebServer.Models;
+﻿using ChooseMemeWebServer.Domain.Models;
 using System.Net.WebSockets;
 
-namespace ChooseMemeWebServer.Interfaces
+namespace ChooseMemeWebServer.Core.Interfaces
 {
     public interface ILobbyService
     {

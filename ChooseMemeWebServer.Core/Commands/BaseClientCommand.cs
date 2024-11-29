@@ -1,7 +1,7 @@
-﻿using ChooseMemeWebServer.Interfaces;
-using ChooseMemeWebServer.Models;
+﻿using ChooseMemeWebServer.Core.Interfaces;
+using ChooseMemeWebServer.Domain.Models;
 
-namespace ChooseMemeWebServer.Commands
+namespace ChooseMemeWebServer.Core.Commands
 {
     public abstract class BaseClientCommand : IClientRequest
     {

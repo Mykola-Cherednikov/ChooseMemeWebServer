@@ -1,19 +1,19 @@
-﻿using ChooseMemeWebServer.Commands;
-using ChooseMemeWebServer.Interfaces;
-using ChooseMemeWebServer.Models;
+﻿using ChooseMemeWebServer.Core.Commands;
+using ChooseMemeWebServer.Core.Interfaces;
+using ChooseMemeWebServer.Domain.Models;
 using MediatR;
 using System.Reflection;
 using System.Text.Json;
 
-namespace ChooseMemeWebServer.Handlers
+namespace ChooseMemeWebServer.Core.Services
 {
-    public class WebSocketCommandHandler : IWebSocketCommandHandler
+    public class WebSocketCommandService : IWebSocketCommandHandler
     {
         private static Dictionary<string, Type> _commandToCommandTypeCache = new Dictionary<string, Type>();
 
         private IMediator _mediator;
 
-        public WebSocketCommandHandler(IMediator mediator)
+        public WebSocketCommandService(IMediator mediator)
         {
             _mediator = mediator;
         }

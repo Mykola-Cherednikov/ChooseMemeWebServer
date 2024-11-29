@@ -1,10 +1,10 @@
-﻿using ChooseMemeWebServer.Interfaces;
-using ChooseMemeWebServer.Models;
+﻿using ChooseMemeWebServer.Core.Interfaces;
+using ChooseMemeWebServer.Domain.Models;
 using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Text;
 
-namespace ChooseMemeWebServer.Services
+namespace ChooseMemeWebServer.Core.Services
 {
     public class LobbyService : ILobbyService
     {

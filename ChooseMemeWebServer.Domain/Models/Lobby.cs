@@ -1,6 +1,6 @@
 ﻿using System.Net.WebSockets;
 
-namespace ChooseMemeWebServer.Models
+namespace ChooseMemeWebServer.Domain.Models
 {
     public class Lobby
     {

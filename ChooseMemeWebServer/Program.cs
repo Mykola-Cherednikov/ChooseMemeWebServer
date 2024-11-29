@@ -1,4 +1,4 @@
-namespace ChooseMemeWebServer
+namespace ChooseMemeWebServer.UI
 {
     public class Program
     {

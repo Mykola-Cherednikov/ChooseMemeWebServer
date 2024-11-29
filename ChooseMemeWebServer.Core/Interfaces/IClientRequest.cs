@@ -1,7 +1,7 @@
-﻿using ChooseMemeWebServer.Models;
+﻿using ChooseMemeWebServer.Domain.Models;
 using MediatR;
 
-namespace ChooseMemeWebServer.Interfaces
+namespace ChooseMemeWebServer.Core.Interfaces
 {
     public interface IClientRequest : IRequest
     {

@@ -1,4 +1,4 @@
-﻿namespace ChooseMemeWebServer.Commands
+﻿namespace ChooseMemeWebServer.Core.Commands
 {
     public class WebSocketCommand
     {

@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace ChooseMemeWebServer.Commands.PlayerReady
+namespace ChooseMemeWebServer.Core.Commands.PlayerReady
 {
     public class PlayerReadyHandler : IRequestHandler<PlayerReadyCommand>
     {
