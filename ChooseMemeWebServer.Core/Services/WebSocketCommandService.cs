@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace ChooseMemeWebServer.Core.Services
 {
-    public class WebSocketCommandService : IWebSocketCommandHandler
+    public class WebSocketCommandService : IWebSocketCommandService
     {
         private static Dictionary<string, Type> _commandToCommandTypeCache = new Dictionary<string, Type>();
 

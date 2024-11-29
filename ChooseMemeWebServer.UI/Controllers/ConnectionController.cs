@@ -9,9 +9,9 @@ namespace ChooseMemeWebServer.UI.Controllers
     public class ConnectionController : ControllerBase
     {
         private readonly ILobbyService _lobbyService;
-        private readonly IWebSocketCommandHandler _commandHandler;
+        private readonly IWebSocketCommandService _commandHandler;
 
-        public ConnectionController(ILobbyService lobbyService, IWebSocketCommandHandler commandHandler)
+        public ConnectionController(ILobbyService lobbyService, IWebSocketCommandService commandHandler)
         {
             _lobbyService = lobbyService;
             _commandHandler = commandHandler;

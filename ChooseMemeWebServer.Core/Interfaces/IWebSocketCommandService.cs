@@ -2,7 +2,7 @@
 
 namespace ChooseMemeWebServer.Core.Interfaces
 {
-    public interface IWebSocketCommandHandler
+    public interface IWebSocketCommandService
     {
         public void Handle(string command, Player player, Lobby lobby);
     }
