@@ -1,5 +1,4 @@
-﻿
-using MediatR;
+﻿using MediatR;
 
 namespace ChooseMemeWebServer.Core.Commands.ForceGameStart
 {

@@ -3,7 +3,7 @@ using ChooseMemeWebServer.Domain.Models;
 
 namespace ChooseMemeWebServer.Core.Commands
 {
-    public abstract class BaseClientCommand : IClientRequest
+    public abstract class BaseCommand : IClientRequest
     {
         public Lobby Lobby { get; set; } = null!;
 

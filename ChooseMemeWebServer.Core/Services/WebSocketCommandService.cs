@@ -1,5 +1,4 @@
-﻿using ChooseMemeWebServer.Core.Commands;
-using ChooseMemeWebServer.Core.Interfaces;
+﻿using ChooseMemeWebServer.Core.Interfaces;
 using ChooseMemeWebServer.Domain.Models;
 using MediatR;
 using System.Reflection;
@@ -20,7 +19,7 @@ namespace ChooseMemeWebServer.Core.Services
 
         public void Handle(string stringCommand, Player player, Lobby lobby)
         {
-            var command = JsonSerializer.Deserialize<WebSocketCommand>(stringCommand);
+            var command = JsonSerializer.Deserialize<WebSocketIncomeData>(stringCommand);
 
             if (command == null)
             {

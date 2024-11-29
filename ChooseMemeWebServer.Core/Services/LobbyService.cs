@@ -40,6 +40,11 @@ namespace ChooseMemeWebServer.Core.Services
             return lobby;
         }
 
+        public void DisconnectFromLobby(Player player)
+        {
+
+        }
+
         public bool TryCloseLobby(WebSocket serverWebSocket, Lobby lobby)
         {
             throw new NotImplementedException();

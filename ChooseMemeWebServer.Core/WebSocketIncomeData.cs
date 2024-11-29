@@ -1,6 +1,6 @@
-﻿namespace ChooseMemeWebServer.Core.Commands
+﻿namespace ChooseMemeWebServer.Core
 {
-    public class WebSocketCommand
+    public class WebSocketIncomeData
     {
         public string CommandTypeName { get; set; } = string.Empty;
 

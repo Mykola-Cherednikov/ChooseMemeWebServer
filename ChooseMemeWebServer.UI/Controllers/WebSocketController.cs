@@ -6,12 +6,13 @@ using System.Net.WebSockets;
 
 namespace ChooseMemeWebServer.UI.Controllers
 {
-    public class ConnectionController : ControllerBase
+    public class WebSocketController : ControllerBase
     {
         private readonly ILobbyService _lobbyService;
         private readonly IWebSocketCommandService _commandHandler;
+        // Change to mediatr
 
-        public ConnectionController(ILobbyService lobbyService, IWebSocketCommandService commandHandler)
+        public WebSocketController(ILobbyService lobbyService, IWebSocketCommandService commandHandler)
         {
             _lobbyService = lobbyService;
             _commandHandler = commandHandler;
