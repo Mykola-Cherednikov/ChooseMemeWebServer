@@ -1,13 +1,14 @@
-﻿using ChooseMemeWebServer.Core.Services;
+﻿using ChooseMemeWebServer.Core.Interfaces;
+using ChooseMemeWebServer.Core.Services;
 using MediatR;
 
 namespace ChooseMemeWebServer.Core.Commands.HandleCommand
 {
     public class HandleCommandHandler : IRequestHandler<HandleCommand>
     {
-        private readonly WebSocketCommandService _commandService;
+        private readonly IWebSocketCommandService _commandService;
 
-        public HandleCommandHandler(WebSocketCommandService commandService)
+        public HandleCommandHandler(IWebSocketCommandService commandService)
         {
             _commandService = commandService;        
         }

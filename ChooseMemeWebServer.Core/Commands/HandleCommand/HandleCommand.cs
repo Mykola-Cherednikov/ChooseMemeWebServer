@@ -2,6 +2,6 @@
 {
     public class HandleCommand : PlayerBaseCommand
     {
-        public string StringCommand { get; set; }
+        public string StringCommand { get; set; } = string.Empty;
     }
 }
