@@ -29,7 +29,7 @@ namespace ChooseMemeWebServer.Core.Services
             return _lobbies.TryAdd(code, lobby);
         }
 
-        public Lobby ConnectToLobby(string code, Player player)
+        public Lobby JoinToLobby(string code, Player player)
         {
             var lobby = _lobbies[code];
 

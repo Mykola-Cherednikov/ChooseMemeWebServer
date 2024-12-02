@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediatR;
+using System.Net.WebSockets;
 
 namespace ChooseMemeWebServer.Core.Commands.CreateLobby
 {
-    internal class CreateLobbyCommand
+    public class CreateLobbyCommand : IRequest<CreateLobbyResponse>
     {
+        public WebSocket WebSocket { get; set; } = null!;
     }
 }

@@ -3,7 +3,7 @@ using ChooseMemeWebServer.Domain.Models;
 
 namespace ChooseMemeWebServer.Core.Commands
 {
-    public abstract class BaseCommand : IClientRequest
+    public abstract class PlayerBaseCommand : IPlayerRequest
     {
         public Lobby Lobby { get; set; } = null!;
 

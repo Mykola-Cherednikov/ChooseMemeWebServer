@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ChooseMemeWebServer.Domain.Models;
+using MediatR;
 
 namespace ChooseMemeWebServer.Core.Commands.JoinLobby
 {
-    internal class JoinLobbyCommand
+    public class JoinLobbyCommand : IRequest<JoinLobbyResponse>
     {
+        public string LobbyCode { get; set; } = string.Empty;
+
+        public Player Player { get; set; } = null!;
     }
 }

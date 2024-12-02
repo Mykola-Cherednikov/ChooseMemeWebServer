@@ -38,12 +38,12 @@ namespace ChooseMemeWebServer.Core.Services
                 return;
             }
 
-            IClientRequest request = (IClientRequest)data;
+            IPlayerRequest request = (IPlayerRequest)data;
 
             request.Player = player;
             request.Lobby = lobby;
 
-            _mediator.Send((IClientRequest)data);
+            _mediator.Send((IPlayerRequest)data);
         }
 
         private bool TryGetCommandType(string typeName, out Type type)

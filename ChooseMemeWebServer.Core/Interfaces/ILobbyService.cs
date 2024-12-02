@@ -7,7 +7,7 @@ namespace ChooseMemeWebServer.Core.Interfaces
     {
         public bool TryCreateLobby(WebSocket serverWebSocket);
 
-        public Lobby ConnectToLobby(string code, Player player);
+        public Lobby JoinToLobby(string code, Player player);
 
 
     }

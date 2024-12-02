@@ -1,6 +1,6 @@
 ﻿namespace ChooseMemeWebServer.Core.Commands.PlayerReady
 {
-    public class PlayerReadyCommand : BaseCommand
+    public class PlayerReadyCommand : PlayerBaseCommand
     {
 
     }

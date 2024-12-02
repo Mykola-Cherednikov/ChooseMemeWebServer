@@ -1,6 +1,10 @@
-﻿using ChooseMemeWebServer.Core.Interfaces;
+﻿using ChooseMemeWebServer.Core.Commands.CreateLobby;
+using ChooseMemeWebServer.Core.Commands.HandleCommand;
+using ChooseMemeWebServer.Core.Commands.JoinLobby;
+using ChooseMemeWebServer.Core.Interfaces;
 using ChooseMemeWebServer.Domain.Extentions;
 using ChooseMemeWebServer.Domain.Models;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.WebSockets;
 
@@ -8,14 +12,12 @@ namespace ChooseMemeWebServer.UI.Controllers
 {
     public class WebSocketController : ControllerBase
     {
-        private readonly ILobbyService _lobbyService;
-        private readonly IWebSocketCommandService _commandHandler;
+        private readonly IMediator _mediator;
         // Change to mediatr
 
-        public WebSocketController(ILobbyService lobbyService, IWebSocketCommandService commandHandler)
+        public WebSocketController(IMediator mediator)
         {
-            _lobbyService = lobbyService;
-            _commandHandler = commandHandler;
+            _mediator = mediator;
         }
 
 
@@ -42,9 +44,14 @@ namespace ChooseMemeWebServer.UI.Controllers
                     WebSocket = webSocket
                 };
 
-                Lobby lobby = null!;
+                JoinLobbyResponse response = await _mediator.Send(new JoinLobbyCommand() { LobbyCode = lobbyCode, Player = player });
 
-                lobby = _lobbyService.ConnectToLobby(lobbyCode, player);
+                Lobby lobby = response.Lobby;
+
+                if (lobby == null)
+                {
+                    return BadRequest("Can`t find Lobby");
+                }
 
                 await ListenClient(player, lobby);
                 return Ok();
@@ -62,7 +69,8 @@ namespace ChooseMemeWebServer.UI.Controllers
             {
                 using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
 
-                if (!_lobbyService.TryCreateLobby(webSocket))
+                CreateLobbyResponse response = await _mediator.Send(new CreateLobbyCommand() { WebSocket = webSocket });
+                if (response == null || !response.Success)
                 {
                     return BadRequest("Error in lobby creation");
                 }
@@ -87,7 +95,7 @@ namespace ChooseMemeWebServer.UI.Controllers
                     continue;
                 }
 
-                _commandHandler.Handle(receiveResult.Message, player, lobby);
+                await _mediator.Send(new HandleCommand() { StringCommand = receiveResult.Message, Player = player, Lobby = lobby});
             }
 
             await player.WebSocket.CloseAsync(

@@ -1,6 +1,6 @@
 ﻿namespace ChooseMemeWebServer.Core.Commands.ForceGameStart
 {
-    public class ForceGameStartCommand : BaseCommand
+    public class ForceGameStartCommand : PlayerBaseCommand
     {
     }
 }
