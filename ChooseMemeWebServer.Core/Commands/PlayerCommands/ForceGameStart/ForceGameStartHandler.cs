@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace ChooseMemeWebServer.Core.Commands.ForceGameStart
+namespace ChooseMemeWebServer.Core.Commands.PlayerCommands.ForceGameStart
 {
     public class ForceGameStartHandler : IRequestHandler<ForceGameStartCommand>
     {

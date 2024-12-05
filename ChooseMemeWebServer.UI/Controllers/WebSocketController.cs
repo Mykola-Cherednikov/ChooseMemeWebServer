@@ -1,7 +1,6 @@
-﻿using ChooseMemeWebServer.Core.Commands.CreateLobby;
-using ChooseMemeWebServer.Core.Commands.HandleCommand;
-using ChooseMemeWebServer.Core.Commands.JoinLobby;
-using ChooseMemeWebServer.Core.Interfaces;
+﻿using ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.CreateLobbyWithServer;
+using ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.PlayerJoinLobby;
+using ChooseMemeWebServer.Core.HandleCommand;
 using ChooseMemeWebServer.Domain.Extentions;
 using ChooseMemeWebServer.Domain.Models;
 using MediatR;
@@ -44,7 +43,7 @@ namespace ChooseMemeWebServer.UI.Controllers
                     WebSocket = webSocket
                 };
 
-                JoinLobbyResponse response = await _mediator.Send(new JoinLobbyCommand() { LobbyCode = lobbyCode, Player = player });
+                PlayerJoinLobbyResponse response = await _mediator.Send(new PlayerJoinLobbyCommand() { LobbyCode = lobbyCode, Player = player });
 
                 Lobby lobby = response.Lobby;
 
@@ -69,11 +68,14 @@ namespace ChooseMemeWebServer.UI.Controllers
             {
                 using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
 
-                CreateLobbyResponse response = await _mediator.Send(new CreateLobbyCommand() { WebSocket = webSocket });
+                CreateLobbyWithServerResponse response = await _mediator.Send(new CreateLobbyWithServerCommand() { WebSocket = webSocket });
+
                 if (response == null || !response.Success)
                 {
                     return BadRequest("Error in lobby creation");
                 }
+
+                // TODO: Send Lobby creation
 
                 await MaintenanceServerConnection(webSocket);
                 return Ok();
@@ -95,7 +97,7 @@ namespace ChooseMemeWebServer.UI.Controllers
                     continue;
                 }
 
-                await _mediator.Send(new HandleCommand() { StringCommand = receiveResult.Message, Player = player, Lobby = lobby});
+                await _mediator.Send(new HandleCommand() { StringCommand = receiveResult.Message, Player = player, Lobby = lobby });
             }
 
             await player.WebSocket.CloseAsync(

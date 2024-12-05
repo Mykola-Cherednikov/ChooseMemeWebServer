@@ -1,9 +1,9 @@
 ﻿using ChooseMemeWebServer.Domain.Models;
 using MediatR;
 
-namespace ChooseMemeWebServer.Core.Commands.JoinLobby
+namespace ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.PlayerJoinLobby
 {
-    public class JoinLobbyCommand : IRequest<JoinLobbyResponse>
+    public class PlayerJoinLobbyCommand : IRequest<PlayerJoinLobbyResponse>
     {
         public string LobbyCode { get; set; } = string.Empty;
 

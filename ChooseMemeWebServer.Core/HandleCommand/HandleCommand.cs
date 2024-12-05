@@ -1,4 +1,6 @@
-﻿namespace ChooseMemeWebServer.Core.Commands.HandleCommand
+﻿using ChooseMemeWebServer.Core.Commands;
+
+namespace ChooseMemeWebServer.Core.HandleCommand
 {
     public class HandleCommand : PlayerBaseCommand
     {

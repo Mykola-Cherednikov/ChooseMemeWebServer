@@ -1,43 +1,83 @@
 ﻿using ChooseMemeWebServer.Core.Interfaces;
 using ChooseMemeWebServer.Domain.Models;
+using RandomNameGeneratorLibrary;
 using System.Collections.Concurrent;
 using System.Net.WebSockets;
+using System.Numerics;
 using System.Text;
 
 namespace ChooseMemeWebServer.Core.Services
 {
     public class LobbyService : ILobbyService
     {
-        private readonly ConcurrentDictionary<string, Lobby> _lobbies;
+        private static readonly ConcurrentDictionary<string, Lobby> _lobbies = new ConcurrentDictionary<string, Lobby>();
 
-        public LobbyService()
+        public Lobby? GetLobby(string code)
         {
-            _lobbies ??= new ConcurrentDictionary<string, Lobby>();
+            return _lobbies.TryGetValue(code, out var lobby) ? lobby : null;
         }
 
-        public bool TryCreateLobby(WebSocket serverWebSocket)
+        public List<Lobby> GetLobbies()
+        {
+            return _lobbies.Values.ToList();
+        }
+
+        public Lobby CreateLobby()
         {
             string code = GenerateCode(6);
 
             Lobby lobby = new()
             {
                 Code = code,
-                Players = new(),
-                ServerWebSocket = serverWebSocket
+                Players = new()
             };
 
-            return _lobbies.TryAdd(code, lobby);
+            _lobbies.TryAdd(lobby.Code, lobby);
+
+            return lobby;
         }
 
-        public Lobby JoinToLobby(string code, Player player)
+        public Lobby CreateLobbyWithServer(WebSocket serverWebSocket)
         {
-            var lobby = _lobbies[code];
+            var lobby = CreateLobby();
+
+            lobby.ServerWebSocket = serverWebSocket;
+
+            return lobby;
+        }
+
+        private bool TryJoinToLobby(string code, Player player, out Lobby? lobby)
+        {
+            if(!_lobbies.TryGetValue(code, out lobby))
+            {
+                return false;
+            }
+
+            lobby = _lobbies[code];
 
             player.Lobby = lobby;
 
             lobby.Players.Add(player);
 
-            return lobby;
+            return true;
+        }
+
+        public bool TryPlayerJoinToLobby(string code, Player player, out Lobby? lobby)
+        {
+            return TryJoinToLobby(code, player, out lobby);
+        }
+
+        public bool TryBotJoinToLobby(string code, out Lobby? lobby)
+        {
+            var placeGenerator = new PersonNameGenerator();
+            var name = placeGenerator.GenerateRandomFirstName();
+
+            Player bot = new Player()
+            {
+                Username = "Bot " + name,
+            };
+
+            return TryJoinToLobby(code, bot, out lobby);
         }
 
         public void DisconnectFromLobby(Player player)
@@ -45,7 +85,7 @@ namespace ChooseMemeWebServer.Core.Services
 
         }
 
-        public bool TryCloseLobby(WebSocket serverWebSocket, Lobby lobby)
+        public void CloseLobby(string code)
         {
             throw new NotImplementedException();
         }
