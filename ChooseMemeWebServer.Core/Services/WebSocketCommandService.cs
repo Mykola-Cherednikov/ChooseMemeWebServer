@@ -1,4 +1,5 @@
 ﻿using ChooseMemeWebServer.Core.Interfaces;
+using ChooseMemeWebServer.Domain;
 using ChooseMemeWebServer.Domain.Models;
 using MediatR;
 using System.Reflection;
@@ -17,33 +18,26 @@ namespace ChooseMemeWebServer.Core.Services
             _mediator = mediator;
         }
 
-        public void Handle(string stringCommand, Player player, Lobby lobby)
+        public void Handle(WebSocketData data, Player player, Lobby lobby)
         {
-            var command = JsonSerializer.Deserialize<WebSocketIncomeData>(stringCommand);
-
-            if (command == null)
+            if (!TryGetCommandType(data.CommandTypeName, out var dataType))
             {
                 return;
             }
 
-            if (!TryGetCommandType(command.CommandTypeName, out var commandType))
+            var entity = JsonSerializer.Deserialize(string.IsNullOrEmpty(data.Data) ? "{}" : data.Data, dataType);
+
+            if (entity == null)
             {
                 return;
             }
 
-            var data = JsonSerializer.Deserialize(command.Data, commandType);
-
-            if (data == null)
-            {
-                return;
-            }
-
-            IPlayerRequest request = (IPlayerRequest)data;
+            IPlayerRequest request = (IPlayerRequest)entity;
 
             request.Player = player;
             request.Lobby = lobby;
 
-            _mediator.Send((IPlayerRequest)data);
+            _mediator.Send((IPlayerRequest)entity);
         }
 
         private bool TryGetCommandType(string typeName, out Type type)

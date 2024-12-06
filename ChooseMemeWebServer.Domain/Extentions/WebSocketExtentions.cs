@@ -1,13 +1,16 @@
 ﻿using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json;
 
 namespace ChooseMemeWebServer.Domain.Extentions
 {
     public static class WebSocketExtentions
     {
-        public static async Task WriteToWebSocket(this WebSocket webSocket, string message)
+        public static async Task WriteToWebSocket(this WebSocket webSocket, WebSocketData data)
         {
-            var buffer = Encoding.UTF8.GetBytes(message);
+            string json = JsonSerializer.Serialize(data);
+
+            var buffer = Encoding.UTF8.GetBytes(json);
 
             await webSocket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
         }

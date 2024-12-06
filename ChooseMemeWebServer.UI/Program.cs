@@ -19,10 +19,15 @@ namespace ChooseMemeWebServer.UI
                 config.AddProfile(new AssemblyMappingProfile(Assembly.GetExecutingAssembly()));
                 config.AddProfile(new AssemblyMappingProfile(typeof(AssemblyMappingProfile).Assembly));
             });
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
             app.UseWebSockets();
             app.MapControllers();
+
+            app.UseSwagger();
+            app.UseSwaggerUI();
             app.Run();
         }
     }

@@ -1,9 +1,10 @@
-﻿using ChooseMemeWebServer.Domain.Models;
+﻿using ChooseMemeWebServer.Domain;
+using ChooseMemeWebServer.Domain.Models;
 
 namespace ChooseMemeWebServer.Core.Interfaces
 {
     public interface IWebSocketCommandService
     {
-        public void Handle(string command, Player player, Lobby lobby);
+        public void Handle(WebSocketData data, Player player, Lobby lobby);
     }
 }

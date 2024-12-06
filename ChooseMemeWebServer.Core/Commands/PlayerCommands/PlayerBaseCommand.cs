@@ -1,7 +1,7 @@
 ﻿using ChooseMemeWebServer.Core.Interfaces;
 using ChooseMemeWebServer.Domain.Models;
 
-namespace ChooseMemeWebServer.Core.Commands
+namespace ChooseMemeWebServer.Core.Commands.PlayerCommands
 {
     public abstract class PlayerBaseCommand : IPlayerRequest
     {

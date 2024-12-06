@@ -1,6 +1,6 @@
-﻿using ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.CreateLobbyWithServer;
+﻿using ChooseMemeWebServer.Core.Commands.PlayerCommands.HandlePlayerCommand;
+using ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.CreateLobbyWithServer;
 using ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.PlayerJoinLobby;
-using ChooseMemeWebServer.Core.HandleCommand;
 using ChooseMemeWebServer.Domain.Extentions;
 using ChooseMemeWebServer.Domain.Models;
 using MediatR;
@@ -9,10 +9,10 @@ using System.Net.WebSockets;
 
 namespace ChooseMemeWebServer.UI.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class WebSocketController : ControllerBase
     {
         private readonly IMediator _mediator;
-        // Change to mediatr
 
         public WebSocketController(IMediator mediator)
         {
@@ -51,6 +51,8 @@ namespace ChooseMemeWebServer.UI.Controllers
                 {
                     return BadRequest("Can`t find Lobby");
                 }
+
+                // TODO: Send Lobby join
 
                 await ListenClient(player, lobby);
                 return Ok();
@@ -97,7 +99,7 @@ namespace ChooseMemeWebServer.UI.Controllers
                     continue;
                 }
 
-                await _mediator.Send(new HandleCommand() { StringCommand = receiveResult.Message, Player = player, Lobby = lobby });
+                await _mediator.Send(new HandlePlayerCommand() { StringData = receiveResult.Message, Player = player, Lobby = lobby });
             }
 
             await player.WebSocket.CloseAsync(
