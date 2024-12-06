@@ -13,6 +13,7 @@ namespace ChooseMemeWebServer.UI
             builder.Services.AddControllers();
             builder.Services.AddMediatR(options => options.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()));
             builder.Services.AddTransient<ILobbyService, LobbyService>();
+            builder.Services.AddTransient<IPlayerService, PlayerService>();
             builder.Services.AddTransient<IWebSocketCommandService, WebSocketCommandService>();
             builder.Services.AddAutoMapper(config =>
             {

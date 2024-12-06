@@ -12,6 +12,13 @@ namespace ChooseMemeWebServer.Core.Services
     {
         private static readonly ConcurrentDictionary<string, Lobby> _lobbies = new ConcurrentDictionary<string, Lobby>();
 
+        private readonly IPlayerService _playerService;
+
+        public LobbyService(IPlayerService playerService)
+        {
+            _playerService = playerService;
+        }
+
         public Lobby? GetLobby(string code)
         {
             return _lobbies.TryGetValue(code, out var lobby) ? lobby : null;
@@ -59,6 +66,8 @@ namespace ChooseMemeWebServer.Core.Services
 
             lobby.Players.Add(player);
 
+            _playerService.AddOnlinePlayer(player);
+
             return true;
         }
 
@@ -75,6 +84,7 @@ namespace ChooseMemeWebServer.Core.Services
             Player bot = new Player()
             {
                 Username = "Bot " + name,
+                IsBot = true,
             };
 
             return TryJoinToLobby(code, bot, out lobby);
