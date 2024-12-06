@@ -1,4 +1,5 @@
 ﻿using ChooseMemeWebServer.Core.DTO;
+using ChooseMemeWebServer.Domain.Models;
 
 namespace ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.CreateLobbyWithServer
 {
@@ -6,6 +7,8 @@ namespace ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.CreateLobbyWith
     {
         public bool Success { get; set; }
 
-        public LobbyDTO Lobby { get; set; } = null!;
+        public Lobby Lobby { get; set; } = null!;
+
+        public LobbyDTO LobbyDTO { get; set; } = null!;
     }
 }

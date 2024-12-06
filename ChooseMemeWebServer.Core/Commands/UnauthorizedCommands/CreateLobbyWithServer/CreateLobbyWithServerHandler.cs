@@ -21,7 +21,9 @@ namespace ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.CreateLobbyWith
         {
             CreateLobbyWithServerResponse response = new();
             Lobby lobby = _lobbyService.CreateLobbyWithServer(request.WebSocket);
-            response.Lobby = _mapper.Map<LobbyDTO>(lobby);
+            response.Lobby = lobby;
+            response.LobbyDTO = _mapper.Map<LobbyDTO>(lobby);
+            response.Success = true;
             return Task.FromResult(response);
         }
     }

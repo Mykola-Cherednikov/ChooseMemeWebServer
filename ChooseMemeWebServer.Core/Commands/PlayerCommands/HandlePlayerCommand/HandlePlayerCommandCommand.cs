@@ -2,8 +2,8 @@
 
 namespace ChooseMemeWebServer.Core.Commands.PlayerCommands.HandlePlayerCommand
 {
-    public class HandlePlayerCommand : PlayerBaseCommand
+    public class HandlePlayerCommandCommand : PlayerBaseCommand
     {
-        public string StringData { get; set; } = string.Empty;
+        public string WebSocketData { get; set; } = string.Empty;
     }
 }

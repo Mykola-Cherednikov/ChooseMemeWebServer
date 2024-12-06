@@ -1,4 +1,6 @@
-﻿using System.Net.WebSockets;
+﻿using ChooseMemeWebServer.Domain.Models;
+using System.Net.WebSockets;
+using System.Numerics;
 using System.Text;
 using System.Text.Json;
 
@@ -6,7 +8,7 @@ namespace ChooseMemeWebServer.Domain.Extentions
 {
     public static class WebSocketExtentions
     {
-        public static async Task WriteToWebSocket(this WebSocket webSocket, WebSocketData data)
+        public static async Task WriteDataToWebSocket(this WebSocket webSocket, WebSocketData data)
         {
             string json = JsonSerializer.Serialize(data);
 
@@ -15,7 +17,7 @@ namespace ChooseMemeWebServer.Domain.Extentions
             await webSocket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
         }
 
-        public static async Task<BetterWebSocketReceiveResult> ReadFromWebSocket(this WebSocket webSocket)
+        public static async Task<BetterWebSocketReceiveResult> ReadDataFromWebSocket(this WebSocket webSocket)
         {
             var buffer = new byte[1024 * 4];
             BetterWebSocketReceiveResult receiveResult = (BetterWebSocketReceiveResult)await webSocket.ReceiveAsync(buffer, CancellationToken.None);
@@ -26,6 +28,30 @@ namespace ChooseMemeWebServer.Domain.Extentions
             }
 
             return receiveResult;
+        }
+
+        public static async Task BroadcastDataToLobby(this Lobby lobby, WebSocketData data)
+        {
+            foreach (var player in lobby.Players)
+            {
+                await player.WriteDataToPlayerWebSocket(data);
+            }
+        }
+
+        public static async Task WriteDataToPlayerWebSocket(this Player player, WebSocketData data)
+        {
+            if (player.WebSocket != null)
+            {
+                await player.WebSocket.WriteDataToWebSocket(data);
+            }
+        }
+
+        public static async Task WriteDataToLobbyServer(this Lobby lobby, WebSocketData data)
+        {
+            if (lobby.ServerWebSocket != null)
+            {
+                await lobby.ServerWebSocket.WriteDataToWebSocket(data);
+            }
         }
     }
 }

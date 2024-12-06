@@ -1,11 +1,14 @@
 ﻿using ChooseMemeWebServer.Core.Commands.PlayerCommands.HandlePlayerCommand;
 using ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.CreateLobbyWithServer;
 using ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.PlayerJoinLobby;
+using ChooseMemeWebServer.Domain;
 using ChooseMemeWebServer.Domain.Extentions;
 using ChooseMemeWebServer.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.WebSockets;
+using System.Text.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ChooseMemeWebServer.UI.Controllers
 {
@@ -39,6 +42,7 @@ namespace ChooseMemeWebServer.UI.Controllers
 
                 Player player = new Player()
                 {
+                    Id = Guid.NewGuid().ToString(),
                     Username = username,
                     WebSocket = webSocket
                 };
@@ -77,7 +81,10 @@ namespace ChooseMemeWebServer.UI.Controllers
                     return BadRequest("Error in lobby creation");
                 }
 
-                // TODO: Send Lobby creation
+                Lobby lobby = response.Lobby;
+
+                var payload = new WebSocketData() { CommandTypeName = "CreateLobbyWithServerResponse", Data = JsonSerializer.Serialize(response.LobbyDTO) };
+                await lobby.WriteDataToLobbyServer(payload);
 
                 await MaintenanceServerConnection(webSocket);
                 return Ok();
@@ -92,14 +99,14 @@ namespace ChooseMemeWebServer.UI.Controllers
         {
             while (!player.WebSocket.CloseStatus.HasValue)
             {
-                var receiveResult = await player.WebSocket.ReadFromWebSocket();
+                var receiveResult = await player.WebSocket.ReadDataFromWebSocket();
 
                 if (receiveResult.MessageType == WebSocketMessageType.Close)
                 {
                     continue;
                 }
 
-                await _mediator.Send(new HandlePlayerCommand() { StringData = receiveResult.Message, Player = player, Lobby = lobby });
+                await _mediator.Send(new HandlePlayerCommandCommand() { WebSocketData = receiveResult.Message, Player = player, Lobby = lobby });
             }
 
             await player.WebSocket.CloseAsync(

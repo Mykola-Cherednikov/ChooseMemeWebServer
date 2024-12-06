@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace ChooseMemeWebServer.Core.Commands.PlayerCommands.HandlePlayerCommand
 {
-    public class HandlePlayerCommandHandler : IRequestHandler<HandlePlayerCommand>
+    public class HandlePlayerCommandHandler : IRequestHandler<HandlePlayerCommandCommand>
     {
         private readonly IWebSocketCommandService _commandService;
 
@@ -14,9 +14,9 @@ namespace ChooseMemeWebServer.Core.Commands.PlayerCommands.HandlePlayerCommand
             _commandService = commandService;
         }
 
-        public Task Handle(HandlePlayerCommand request, CancellationToken cancellationToken)
+        public Task Handle(HandlePlayerCommandCommand request, CancellationToken cancellationToken)
         {
-            var data = JsonSerializer.Deserialize<WebSocketData>(request.StringData);
+            var data = JsonSerializer.Deserialize<WebSocketData>(request.WebSocketData);
 
             if (data == null)
             {

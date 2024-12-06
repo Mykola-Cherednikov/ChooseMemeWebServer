@@ -15,6 +15,8 @@ namespace ChooseMemeWebServer.Core.Interfaces
 
         public void RemoveOnlinePlayer(string id);
 
-        public Player GetPlayer(string playerId);
+        public Player? GetPlayer(string playerId);
+
+        public void SetPlayerIsReady(Player player);
     }
 }

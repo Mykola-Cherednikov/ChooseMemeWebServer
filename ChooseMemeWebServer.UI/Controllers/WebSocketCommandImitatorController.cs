@@ -17,7 +17,7 @@ namespace ChooseMemeWebServer.UI.Controllers
         [HttpPost("/ImitateWebSocketCommand")]
         public IActionResult ImitateWebSocketCommand(WebSocketData webSocketData, string playerId)
         {
-            _mediator.Send(new ImitateWebSocketCommandCommand() { WebSocketData = webSocketData, PlayerId = playerId });
+            _mediator.Send(new ImitateWebSocketCommandCommand() { WebSocketData = webSocketData, PlayerId = playerId ?? "" });
             return Ok();
         }
     }

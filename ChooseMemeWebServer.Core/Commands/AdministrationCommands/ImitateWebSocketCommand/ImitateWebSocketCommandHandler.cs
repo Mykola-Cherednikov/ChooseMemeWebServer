@@ -19,7 +19,7 @@ namespace ChooseMemeWebServer.Core.Commands.AdministrationCommands.ImitateWebSoc
         public Task Handle(ImitateWebSocketCommandCommand request, CancellationToken cancellationToken)
         {
             Player player = _playerService.GetPlayer(request.PlayerId);
-            Lobby lobby = player.Lobby;
+            Lobby lobby = player?.Lobby;
 
             _commandService.Handle(request.WebSocketData, player, lobby);
 

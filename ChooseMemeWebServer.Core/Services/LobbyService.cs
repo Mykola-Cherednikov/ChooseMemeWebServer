@@ -1,22 +1,28 @@
-﻿using ChooseMemeWebServer.Core.Interfaces;
+﻿using AutoMapper;
+using ChooseMemeWebServer.Core.DTO;
+using ChooseMemeWebServer.Core.Interfaces;
+using ChooseMemeWebServer.Domain;
+using ChooseMemeWebServer.Domain.Extentions;
 using ChooseMemeWebServer.Domain.Models;
 using RandomNameGeneratorLibrary;
 using System.Collections.Concurrent;
 using System.Net.WebSockets;
-using System.Numerics;
 using System.Text;
+using System.Text.Json;
 
 namespace ChooseMemeWebServer.Core.Services
 {
     public class LobbyService : ILobbyService
     {
-        private static readonly ConcurrentDictionary<string, Lobby> _lobbies = new ConcurrentDictionary<string, Lobby>();
+        private static readonly Dictionary<string, Lobby> _lobbies = new Dictionary<string, Lobby>();
 
         private readonly IPlayerService _playerService;
+        private readonly IMapper _mapper;
 
-        public LobbyService(IPlayerService playerService)
+        public LobbyService(IPlayerService playerService, IMapper mapper)
         {
             _playerService = playerService;
+            _mapper = mapper;
         }
 
         public Lobby? GetLobby(string code)
@@ -55,7 +61,7 @@ namespace ChooseMemeWebServer.Core.Services
 
         private bool TryJoinToLobby(string code, Player player, out Lobby? lobby)
         {
-            if(!_lobbies.TryGetValue(code, out lobby))
+            if (!_lobbies.TryGetValue(code, out lobby))
             {
                 return false;
             }
@@ -67,6 +73,9 @@ namespace ChooseMemeWebServer.Core.Services
             lobby.Players.Add(player);
 
             _playerService.AddOnlinePlayer(player);
+
+            var payload = new WebSocketData() { CommandTypeName = "PlayerJoin", Data = JsonSerializer.Serialize(_mapper.Map<PlayerDTO>(player)) };
+            (lobby.WriteDataToLobbyServer(payload)).GetAwaiter().GetResult();
 
             return true;
         }
@@ -83,6 +92,7 @@ namespace ChooseMemeWebServer.Core.Services
 
             Player bot = new Player()
             {
+                Id = Guid.NewGuid().ToString(),
                 Username = "Bot " + name,
                 IsBot = true,
             };
