@@ -6,6 +6,6 @@ namespace ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.PlayerJoinLobby
     {
         public bool IsSuccess { get; set; }
 
-        public Lobby Lobby { get; set; } = null!;
+        public Lobby? Lobby { get; set; } = null!;
     }
 }

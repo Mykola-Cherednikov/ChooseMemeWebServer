@@ -5,7 +5,6 @@ using ChooseMemeWebServer.Domain;
 using ChooseMemeWebServer.Domain.Extentions;
 using ChooseMemeWebServer.Domain.Models;
 using RandomNameGeneratorLibrary;
-using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
@@ -59,11 +58,11 @@ namespace ChooseMemeWebServer.Core.Services
             return lobby;
         }
 
-        private bool TryJoinToLobby(string code, Player player, out Lobby? lobby)
+        private async Task<Lobby?> JoinToLobby(string code, Player player)
         {
-            if (!_lobbies.TryGetValue(code, out lobby))
+            if (!_lobbies.TryGetValue(code, out var lobby))
             {
-                return false;
+                return null;
             }
 
             lobby = _lobbies[code];
@@ -75,17 +74,23 @@ namespace ChooseMemeWebServer.Core.Services
             _playerService.AddOnlinePlayer(player);
 
             var payload = new WebSocketData() { CommandTypeName = "PlayerJoin", Data = JsonSerializer.Serialize(_mapper.Map<PlayerDTO>(player)) };
-            (lobby.WriteDataToLobbyServer(payload)).GetAwaiter().GetResult();
+            await lobby.WriteDataToLobbyServer(payload);
 
-            return true;
+            var leader = lobby.Players.FirstOrDefault(p => p.IsLeader);
+            if (leader == null)
+            {
+                await SetLeader(player, lobby);
+            }
+
+            return lobby;
         }
 
-        public bool TryPlayerJoinToLobby(string code, Player player, out Lobby? lobby)
+        public async Task<Lobby?> PlayerJoinToLobby(string code, Player player)
         {
-            return TryJoinToLobby(code, player, out lobby);
+            return await JoinToLobby(code, player);
         }
 
-        public bool TryBotJoinToLobby(string code, out Lobby? lobby)
+        public async Task<Lobby?> BotJoinToLobby(string code)
         {
             var placeGenerator = new PersonNameGenerator();
             var name = placeGenerator.GenerateRandomFirstName();
@@ -97,12 +102,33 @@ namespace ChooseMemeWebServer.Core.Services
                 IsBot = true,
             };
 
-            return TryJoinToLobby(code, bot, out lobby);
+            return await JoinToLobby(code, bot);
         }
 
-        public void DisconnectFromLobby(Player player)
+        public async Task LeaveFromLobby(Player player)
         {
+            var lobby = player.Lobby;
 
+            lobby.Players.Remove(player);
+
+            _playerService.RemoveOnlinePlayer(player.Id);
+
+            var payload = new WebSocketData { CommandTypeName = "PlayerLeave", Data = JsonSerializer.Serialize(_mapper.Map<PlayerDTO>(player)) };
+            await lobby.WriteDataToLobbyServer(payload);
+
+            if (player.IsLeader && lobby.Players.Count > 0)
+            {
+                var newLeader = lobby.Players[0];
+                await SetLeader(newLeader, lobby);
+            }
+        }
+
+        private async Task SetLeader(Player player, Lobby lobby)
+        {
+            player.IsLeader = true;
+            var payload = new WebSocketData { CommandTypeName = "NewLeader", Data = JsonSerializer.Serialize(_mapper.Map<PlayerDTO>(player)) };
+            await lobby.WriteDataToLobbyServer(payload);
+            await player.WriteDataToPlayerWebSocket(payload);
         }
 
         public void CloseLobby(string code)

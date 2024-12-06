@@ -13,8 +13,10 @@ namespace ChooseMemeWebServer.Core.Interfaces
 
         public Lobby CreateLobbyWithServer(WebSocket serverWebSocket);
 
-        public bool TryPlayerJoinToLobby(string code, Player player, out Lobby? lobby);
+        public Task<Lobby?> PlayerJoinToLobby(string code, Player player);
 
-        public bool TryBotJoinToLobby(string code, out Lobby? lobby);
+        public Task<Lobby?> BotJoinToLobby(string code);
+
+        public Task LeaveFromLobby(Player player);
     }
 }

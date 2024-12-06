@@ -20,7 +20,7 @@ namespace ChooseMemeWebServer.Core.Commands.AdministrationCommands.AddBotToLobby
         public Task<AddBotToLobbyResponse> Handle(AddBotToLobbyCommand request, CancellationToken cancellationToken)
         {
             AddBotToLobbyResponse response = new();
-            _lobbyService.TryBotJoinToLobby(request.Code, out Lobby? lobby);
+            var lobby = _lobbyService.BotJoinToLobby(request.Code);
             response.Lobby = _mapper.Map<LobbyDTO>(lobby);
 
             return Task.FromResult(response);

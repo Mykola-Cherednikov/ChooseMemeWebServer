@@ -15,5 +15,7 @@ namespace ChooseMemeWebServer.Domain.Models
         public bool IsReady { get; set; } = false;
 
         public bool IsBot { get; set; } = false;
+
+        public bool IsLeader { get; set; } = false;
     }
 }
