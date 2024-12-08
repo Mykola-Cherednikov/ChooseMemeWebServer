@@ -10,7 +10,7 @@ namespace ChooseMemeWebServer.Core.Interfaces
 
         public Lobby CreateLobby();
 
-        public Task<Lobby> CreateLobbyWithServer();
+        public Task<Lobby> ServerJoinToLobby(Lobby lobby);
 
         public Task<Lobby?> PlayerJoinToLobby(string code, Player player);
 

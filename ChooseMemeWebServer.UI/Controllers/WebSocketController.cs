@@ -1,7 +1,8 @@
 ﻿using ChooseMemeWebServer.Core.Commands.PlayerCommands.HandlePlayerCommand;
-using ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.CreateLobbyWithServer;
+using ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.CreateLobbyFromWebSocket;
 using ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.CreatePlayer;
 using ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.PlayerJoinLobby;
+using ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.ServerJoinLobby;
 using ChooseMemeWebServer.Core.Common;
 using ChooseMemeWebServer.Domain.Models;
 using ChooseMemeWebServer.Infrastructure;
@@ -77,14 +78,11 @@ namespace ChooseMemeWebServer.UI.Controllers
             {
                 using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
 
-                CreateLobbyWithServerResponse response = await _mediator.Send(new CreateLobbyWithServerCommand());
-
-                if (response == null || !response.Success)
-                {
-                    return BadRequest("Error in lobby creation");
-                }
+                CreateLobbyFromWebSocketResponse response = await _mediator.Send(new CreateLobbyFromWebSocketCommand());
 
                 _connectionManager.AddServerConnection(response.Lobby, webSocket);
+
+                await _mediator.Send(new ServerJoinLobbyCommand() { Lobby = response.Lobby });
 
                 await MaintenanceServerConnection(webSocket);
 

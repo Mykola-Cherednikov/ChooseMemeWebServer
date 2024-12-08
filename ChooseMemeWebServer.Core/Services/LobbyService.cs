@@ -33,10 +33,8 @@ namespace ChooseMemeWebServer.Core.Services
             return lobby;
         }
 
-        public async Task<Lobby> CreateLobbyWithServer()
+        public async Task<Lobby> ServerJoinToLobby(Lobby lobby)
         {
-            var lobby = CreateLobby();
-
             var payload = new WebSocketData() { CommandTypeName = "CreateLobby", Data = JsonSerializer.Serialize(_mapper.Map<LobbyDTO>(lobby)) };
 
             await _sender.SendMessageToServer(lobby, payload);
@@ -99,6 +97,8 @@ namespace ChooseMemeWebServer.Core.Services
             var lobby = player.Lobby;
 
             lobby.Players.Remove(player);
+
+            _playerService.RemoveOnlinePlayer(player);
 
             var payload = new WebSocketData { CommandTypeName = "PlayerLeave", Data = JsonSerializer.Serialize(_mapper.Map<PlayerDTO>(player)) };
 
