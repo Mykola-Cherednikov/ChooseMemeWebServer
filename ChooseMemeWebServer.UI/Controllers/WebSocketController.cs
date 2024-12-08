@@ -1,14 +1,14 @@
 ﻿using ChooseMemeWebServer.Core.Commands.PlayerCommands.HandlePlayerCommand;
 using ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.CreateLobbyWithServer;
+using ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.CreatePlayer;
 using ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.PlayerJoinLobby;
-using ChooseMemeWebServer.Domain;
-using ChooseMemeWebServer.Domain.Extentions;
+using ChooseMemeWebServer.Core.Common;
 using ChooseMemeWebServer.Domain.Models;
+using ChooseMemeWebServer.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.WebSockets;
 using System.Text.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ChooseMemeWebServer.UI.Controllers
 {
@@ -16,12 +16,13 @@ namespace ChooseMemeWebServer.UI.Controllers
     public class WebSocketController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly WebSocketConnectionManager _connectionManager;
 
-        public WebSocketController(IMediator mediator)
+        public WebSocketController(IMediator mediator, WebSocketConnectionManager connectionManager)
         {
             _mediator = mediator;
+            _connectionManager = connectionManager;
         }
-
 
         [Route("/wsClient")]
         public async Task<IActionResult> ClientConnect(string username, string lobbyCode)
@@ -40,25 +41,27 @@ namespace ChooseMemeWebServer.UI.Controllers
 
                 using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
 
-                Player player = new Player()
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Username = username,
-                    WebSocket = webSocket
-                };
+                CreatePlayerResponse playerResponse = new CreatePlayerResponse();
 
-                PlayerJoinLobbyResponse response = await _mediator.Send(new PlayerJoinLobbyCommand() { LobbyCode = lobbyCode, Player = player });
+                Player player = playerResponse.Player;
 
-                Lobby lobby = response.Lobby;
+                _connectionManager.AddPlayerConnection(player, webSocket);
+
+                PlayerJoinLobbyResponse lobbyResponse = await _mediator.Send(new PlayerJoinLobbyCommand() { LobbyCode = lobbyCode, Player = player });
+
+                Lobby? lobby = lobbyResponse.Lobby;
 
                 if (lobby == null)
                 {
+                    _connectionManager.RemovePlayerConnection(player);
+
                     return BadRequest("Can`t find Lobby");
                 }
 
-                // TODO: Send Lobby join
+                await ListenClient(webSocket, player, lobby);
 
-                await ListenClient(player, lobby);
+                _connectionManager.RemovePlayerConnection(player);
+
                 return Ok();
             }
             else
@@ -74,19 +77,19 @@ namespace ChooseMemeWebServer.UI.Controllers
             {
                 using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
 
-                CreateLobbyWithServerResponse response = await _mediator.Send(new CreateLobbyWithServerCommand() { WebSocket = webSocket });
+                CreateLobbyWithServerResponse response = await _mediator.Send(new CreateLobbyWithServerCommand());
 
                 if (response == null || !response.Success)
                 {
                     return BadRequest("Error in lobby creation");
                 }
 
-                Lobby lobby = response.Lobby;
-
-                var payload = new WebSocketData() { CommandTypeName = "CreateLobbyWithServerResponse", Data = JsonSerializer.Serialize(response.LobbyDTO) };
-                await lobby.WriteDataToLobbyServer(payload);
+                _connectionManager.AddServerConnection(response.Lobby, webSocket);
 
                 await MaintenanceServerConnection(webSocket);
+
+                _connectionManager.RemoveServerConnection(response.Lobby);
+
                 return Ok();
             }
             else
@@ -95,13 +98,13 @@ namespace ChooseMemeWebServer.UI.Controllers
             }
         }
 
-        private async Task ListenClient(Player player, Lobby lobby)
+        private async Task ListenClient(WebSocket webSocket, Player player, Lobby lobby)
         {
-            while (!player.WebSocket.CloseStatus.HasValue)
+            while (!webSocket.CloseStatus.HasValue)
             {
-                var receiveResult = await player.WebSocket.ReadDataFromWebSocket();
+                var receiveResult = await webSocket.ReadDataFromWebSocket();
 
-                if (receiveResult.MessageType == WebSocketMessageType.Close)
+                if (receiveResult.MessageType == BetterWebSocketMessageType.Close)
                 {
                     continue;
                 }
@@ -109,9 +112,9 @@ namespace ChooseMemeWebServer.UI.Controllers
                 await _mediator.Send(new HandlePlayerCommandCommand() { WebSocketData = receiveResult.Message, Player = player, Lobby = lobby });
             }
 
-            await player.WebSocket.CloseAsync(
-                player.WebSocket.CloseStatus.Value,
-                player.WebSocket.CloseStatusDescription,
+            await webSocket.CloseAsync(
+                webSocket.CloseStatus.Value,
+                webSocket.CloseStatusDescription,
                 CancellationToken.None);
         }
 

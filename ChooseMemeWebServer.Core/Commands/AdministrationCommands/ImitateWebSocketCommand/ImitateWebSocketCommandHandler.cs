@@ -18,7 +18,7 @@ namespace ChooseMemeWebServer.Core.Commands.AdministrationCommands.ImitateWebSoc
 
         public Task Handle(ImitateWebSocketCommandCommand request, CancellationToken cancellationToken)
         {
-            Player? player = _playerService.GetPlayer(request.PlayerId);
+            Player? player = _playerService.GetOnlinePlayer(request.PlayerId);
 
             if (player == null)
             {

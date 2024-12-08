@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChooseMemeWebServer.UI", "ChooseMemeWebServer.UI.csproj", "{182860E0-29BC-4C8C-A679-3F2E0DA6DD8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChooseMemeWebServer.UI", "ChooseMemeWebServer.UI.csproj", "{182860E0-29BC-4C8C-A679-3F2E0DA6DD8B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChooseMemeWebServer.Domain", "..\ChooseMemeWebServer.Domain\ChooseMemeWebServer.Domain.csproj", "{E821FC3C-342B-46CD-BEBB-DA11625CCC26}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChooseMemeWebServer.Domain", "..\ChooseMemeWebServer.Domain\ChooseMemeWebServer.Domain.csproj", "{E821FC3C-342B-46CD-BEBB-DA11625CCC26}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChooseMemeWebServer.Core", "..\ChooseMemeWebServer.Core\ChooseMemeWebServer.Core.csproj", "{A0A85DE6-F8B6-4680-88F5-936AD534A5CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChooseMemeWebServer.Core", "..\ChooseMemeWebServer.Core\ChooseMemeWebServer.Core.csproj", "{A0A85DE6-F8B6-4680-88F5-936AD534A5CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChooseMemeWebServer.Infrastructure", "..\ChooseMemeWebServer.Infrastructure\ChooseMemeWebServer.Infrastructure.csproj", "{F907C354-6E26-4081-A7AA-65A95BC95AB4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{A0A85DE6-F8B6-4680-88F5-936AD534A5CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0A85DE6-F8B6-4680-88F5-936AD534A5CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0A85DE6-F8B6-4680-88F5-936AD534A5CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F907C354-6E26-4081-A7AA-65A95BC95AB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F907C354-6E26-4081-A7AA-65A95BC95AB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F907C354-6E26-4081-A7AA-65A95BC95AB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F907C354-6E26-4081-A7AA-65A95BC95AB4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

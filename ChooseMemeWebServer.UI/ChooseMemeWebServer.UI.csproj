@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ChooseMemeWebServer.Core\ChooseMemeWebServer.Core.csproj" />
+    <ProjectReference Include="..\ChooseMemeWebServer.Infrastructure\ChooseMemeWebServer.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

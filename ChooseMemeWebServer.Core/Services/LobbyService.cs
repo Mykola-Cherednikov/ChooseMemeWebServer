@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
+using ChooseMemeWebServer.Core.Common;
 using ChooseMemeWebServer.Core.DTO;
 using ChooseMemeWebServer.Core.Interfaces;
-using ChooseMemeWebServer.Domain;
-using ChooseMemeWebServer.Domain.Extentions;
 using ChooseMemeWebServer.Domain.Models;
 using RandomNameGeneratorLibrary;
-using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 
@@ -13,70 +11,67 @@ namespace ChooseMemeWebServer.Core.Services
 {
     public class LobbyService : ILobbyService
     {
-        private static readonly Dictionary<string, Lobby> _lobbies = new Dictionary<string, Lobby>();
-
-        private readonly IPlayerService _playerService;
+        private readonly IWebSocketSender _sender;
         private readonly IMapper _mapper;
 
-        public LobbyService(IPlayerService playerService, IMapper mapper)
+        private static readonly Dictionary<string, Lobby> activeLobbies = new Dictionary<string, Lobby>();
+
+        public LobbyService(IWebSocketSender sender, IMapper mapper)
         {
-            _playerService = playerService;
+            _sender = sender;
             _mapper = mapper;
-        }
-
-        public Lobby? GetLobby(string code)
-        {
-            return _lobbies.TryGetValue(code, out var lobby) ? lobby : null;
-        }
-
-        public List<Lobby> GetLobbies()
-        {
-            return _lobbies.Values.ToList();
         }
 
         public Lobby CreateLobby()
         {
-            string code = GenerateCode(6);
+            Lobby lobby = new Lobby(GenerateCode(6));
 
-            Lobby lobby = new()
-            {
-                Code = code,
-                Players = new()
-            };
-
-            _lobbies.TryAdd(lobby.Code, lobby);
+            activeLobbies.Add(lobby.Code, lobby);
 
             return lobby;
         }
 
-        public Lobby CreateLobbyWithServer(WebSocket serverWebSocket)
+        public async Task<Lobby> CreateLobbyWithServer()
         {
             var lobby = CreateLobby();
 
-            lobby.ServerWebSocket = serverWebSocket;
+            var payload = new WebSocketData() { CommandTypeName = "CreateLobby", Data = JsonSerializer.Serialize(_mapper.Map<LobbyDTO>(lobby)) };
 
+            await _sender.SendMessageToServer(lobby, payload);
+
+            return lobby;
+        }
+
+        public List<Lobby> GetLobbies()
+        {
+            return activeLobbies.Values.ToList();
+        }
+
+        public Lobby? GetLobby(string code)
+        {
+            activeLobbies.TryGetValue(code, out var lobby);
             return lobby;
         }
 
         private async Task<Lobby?> JoinToLobby(string code, Player player)
         {
-            if (!_lobbies.TryGetValue(code, out var lobby))
+            if (!activeLobbies.TryGetValue(code, out var lobby))
             {
                 return null;
             }
 
-            lobby = _lobbies[code];
-
-            player.Lobby = lobby;
-
-            lobby.Players.Add(player);
-
-            _playerService.AddOnlinePlayer(player);
+            lobby.PlayerJoin(player);
 
             var payload = new WebSocketData() { CommandTypeName = "PlayerJoin", Data = JsonSerializer.Serialize(_mapper.Map<PlayerDTO>(player)) };
-            await lobby.WriteDataToLobbyServer(payload);
+
+            await _sender.SendMessageToServer(lobby, payload);
+
+            payload = new WebSocketData() { CommandTypeName = "PlayerJoin" };
+
+            await _sender.SendMessageToPlayer(player, payload);
 
             var leader = lobby.Players.FirstOrDefault(p => p.IsLeader);
+
             if (leader == null)
             {
                 await SetLeader(player, lobby);
@@ -92,48 +87,47 @@ namespace ChooseMemeWebServer.Core.Services
 
         public async Task<Lobby?> BotJoinToLobby(string code)
         {
-            var placeGenerator = new PersonNameGenerator();
-            var name = placeGenerator.GenerateRandomFirstName();
+            var nameGenerator = new PersonNameGenerator();
+            var name = nameGenerator.GenerateRandomFirstName();
 
             Player bot = new Player()
             {
-                Id = Guid.NewGuid().ToString(),
                 Username = "Bot " + name,
-                IsBot = true,
+                IsBot = true
             };
 
             return await JoinToLobby(code, bot);
         }
 
-        public async Task LeaveFromLobby(Player player)
+        public async Task<Lobby> LeaveFromLobby(Player player)
         {
             var lobby = player.Lobby;
 
             lobby.Players.Remove(player);
 
-            _playerService.RemoveOnlinePlayer(player.Id);
-
             var payload = new WebSocketData { CommandTypeName = "PlayerLeave", Data = JsonSerializer.Serialize(_mapper.Map<PlayerDTO>(player)) };
-            await lobby.WriteDataToLobbyServer(payload);
+
+            await _sender.SendMessageToServer(lobby, payload);
 
             if (player.IsLeader && lobby.Players.Count > 0)
             {
                 var newLeader = lobby.Players[0];
                 await SetLeader(newLeader, lobby);
             }
+
+            return lobby;
         }
 
-        private async Task SetLeader(Player player, Lobby lobby)
+        public async Task<Lobby> SetLeader(Player player, Lobby lobby)
         {
             player.IsLeader = true;
-            var payload = new WebSocketData { CommandTypeName = "NewLeader", Data = JsonSerializer.Serialize(_mapper.Map<PlayerDTO>(player)) };
-            await lobby.WriteDataToLobbyServer(payload);
-            await player.WriteDataToPlayerWebSocket(payload);
-        }
 
-        public void CloseLobby(string code)
-        {
-            throw new NotImplementedException();
+            var payload = new WebSocketData { CommandTypeName = "NewLeader", Data = JsonSerializer.Serialize(_mapper.Map<PlayerDTO>(player)) };
+
+            await _sender.SendMessageToServer(lobby, payload);
+            await _sender.SendMessageToPlayer(player, payload);
+
+            return lobby;
         }
 
         private string GenerateCode(int length)

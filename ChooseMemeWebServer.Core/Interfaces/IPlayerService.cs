@@ -1,9 +1,4 @@
 ﻿using ChooseMemeWebServer.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChooseMemeWebServer.Core.Interfaces
 {
@@ -11,11 +6,11 @@ namespace ChooseMemeWebServer.Core.Interfaces
     {
         public List<Player> GetOnlinePlayers();
 
-        public void AddOnlinePlayer(Player player);
+        public Player AddOnlinePlayer(string username);
 
-        public void RemoveOnlinePlayer(string id);
+        public void RemoveOnlinePlayer(Player player);
 
-        public Player? GetPlayer(string playerId);
+        public Player? GetOnlinePlayer(string playerId);
 
         public void SetPlayerIsReady(Player player);
     }

@@ -17,13 +17,14 @@ namespace ChooseMemeWebServer.Core.Commands.AdministrationCommands.AddBotToLobby
             _mapper = mapper;
         }
 
-        public Task<AddBotToLobbyResponse> Handle(AddBotToLobbyCommand request, CancellationToken cancellationToken)
+        public async Task<AddBotToLobbyResponse> Handle(AddBotToLobbyCommand request, CancellationToken cancellationToken)
         {
             AddBotToLobbyResponse response = new();
-            var lobby = _lobbyService.BotJoinToLobby(request.Code);
+            var lobby = await _lobbyService.BotJoinToLobby(request.Code);
+
             response.Lobby = _mapper.Map<LobbyDTO>(lobby);
 
-            return Task.FromResult(response);
+            return response;
         }
     }
 }

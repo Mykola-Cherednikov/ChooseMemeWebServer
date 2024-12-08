@@ -1,6 +1,4 @@
-﻿using System.Net.WebSockets;
-
-namespace ChooseMemeWebServer.Domain.Models
+﻿namespace ChooseMemeWebServer.Domain.Models
 {
     public class Lobby
     {
@@ -8,6 +6,22 @@ namespace ChooseMemeWebServer.Domain.Models
 
         public List<Player> Players { get; set; } = null!;
 
-        public WebSocket ServerWebSocket { get; set; } = null!;
+        public Lobby(string code)
+        {
+            Code = code;
+            Players = new List<Player>();
+        }
+
+        public void PlayerJoin(Player player)
+        {
+            Players.Add(player);
+
+            player.Lobby = this;
+        }
+
+        public void PlayerLeave(Player player)
+        {
+            Players.Remove(player);
+        }
     }
 }

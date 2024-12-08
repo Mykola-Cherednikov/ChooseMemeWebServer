@@ -1,6 +1,8 @@
 using ChooseMemeWebServer.Core.Common.Mappings;
 using ChooseMemeWebServer.Core.Interfaces;
 using ChooseMemeWebServer.Core.Services;
+using ChooseMemeWebServer.Domain.Models;
+using ChooseMemeWebServer.Infrastructure;
 using System.Reflection;
 
 namespace ChooseMemeWebServer.UI
@@ -15,10 +17,13 @@ namespace ChooseMemeWebServer.UI
             builder.Services.AddTransient<ILobbyService, LobbyService>();
             builder.Services.AddTransient<IPlayerService, PlayerService>();
             builder.Services.AddTransient<IWebSocketCommandService, WebSocketCommandService>();
+            builder.Services.AddTransient<IWebSocketSender, WebSocketSender>();
+            builder.Services.AddTransient<WebSocketConnectionManager>();
             builder.Services.AddAutoMapper(config =>
             {
                 config.AddProfile(new AssemblyMappingProfile(Assembly.GetExecutingAssembly()));
                 config.AddProfile(new AssemblyMappingProfile(typeof(AssemblyMappingProfile).Assembly));
+                config.AddProfile(new AssemblyMappingProfile(typeof(Lobby).Assembly));
             });
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

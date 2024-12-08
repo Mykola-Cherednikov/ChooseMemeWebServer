@@ -1,5 +1,5 @@
 ﻿using ChooseMemeWebServer.Core.Commands.AdministrationCommands.ImitateWebSocketCommand;
-using ChooseMemeWebServer.Domain;
+using ChooseMemeWebServer.Core.Common;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

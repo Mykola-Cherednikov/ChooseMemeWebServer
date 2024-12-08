@@ -1,4 +1,4 @@
-﻿using ChooseMemeWebServer.Domain;
+﻿using ChooseMemeWebServer.Core.Common;
 using MediatR;
 
 namespace ChooseMemeWebServer.Core.Commands.AdministrationCommands.ImitateWebSocketCommand

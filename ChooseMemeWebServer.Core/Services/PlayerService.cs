@@ -1,43 +1,52 @@
 ﻿using AutoMapper;
+using ChooseMemeWebServer.Core.Common;
 using ChooseMemeWebServer.Core.DTO;
 using ChooseMemeWebServer.Core.Interfaces;
-using ChooseMemeWebServer.Domain;
-using ChooseMemeWebServer.Domain.Extentions;
 using ChooseMemeWebServer.Domain.Models;
-using System.Collections.Concurrent;
 using System.Text.Json;
 
 namespace ChooseMemeWebServer.Core.Services
 {
     public class PlayerService : IPlayerService
     {
-        private static readonly Dictionary<string, Player> _onlinePlayers = new Dictionary<string, Player>();
-
+        private readonly IWebSocketSender _sender;
         private readonly IMapper _mapper;
 
-        public PlayerService(IMapper mapper)
+        private static readonly Dictionary<string, Player> onlinePlayers = new Dictionary<string, Player>();
+
+        public PlayerService(IWebSocketSender sender, IMapper mapper)
         {
+            _sender = sender;
             _mapper = mapper;
+        }
+
+        public Player AddOnlinePlayer(string username)
+        {
+            Player player = new Player()
+            {
+                Username = username
+            };
+
+            onlinePlayers.Add(player.Id, player);
+
+            return player;
+        }
+
+        public Player? GetOnlinePlayer(string playerId)
+        {
+            onlinePlayers.TryGetValue(playerId, out Player? player);
+
+            return player;
         }
 
         public List<Player> GetOnlinePlayers()
         {
-            return _onlinePlayers.Values.ToList();
+            return onlinePlayers.Values.ToList();
         }
 
-        public Player? GetPlayer(string playerId)
+        public void RemoveOnlinePlayer(Player player)
         {
-            return _onlinePlayers.TryGetValue(playerId, out Player? player) ? player : null;
-        }
-
-        public void AddOnlinePlayer(Player player)
-        {
-            _onlinePlayers.TryAdd(player.Id, player);
-        }
-
-        public void RemoveOnlinePlayer(string id)
-        {
-            _onlinePlayers.Remove(id);
+            onlinePlayers.Remove(player.Id);
         }
 
         public void SetPlayerIsReady(Player player)
@@ -45,8 +54,7 @@ namespace ChooseMemeWebServer.Core.Services
             player.IsReady = true;
 
             var payload = new WebSocketData() { CommandTypeName = "PlayerIsReady", Data = JsonSerializer.Serialize(_mapper.Map<PlayerDTO>(player)) };
-
-            player.Lobby.WriteDataToLobbyServer(payload).GetAwaiter().GetResult();
+            _sender.SendMessageToServer(player.Lobby, payload);
         }
     }
 }

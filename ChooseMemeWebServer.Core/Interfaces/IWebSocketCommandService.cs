@@ -1,4 +1,4 @@
-﻿using ChooseMemeWebServer.Domain;
+﻿using ChooseMemeWebServer.Core.Common;
 using ChooseMemeWebServer.Domain.Models;
 
 namespace ChooseMemeWebServer.Core.Interfaces

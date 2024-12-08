@@ -1,4 +1,4 @@
-﻿namespace ChooseMemeWebServer.Domain
+﻿namespace ChooseMemeWebServer.Core.Common
 {
     public class WebSocketData
     {

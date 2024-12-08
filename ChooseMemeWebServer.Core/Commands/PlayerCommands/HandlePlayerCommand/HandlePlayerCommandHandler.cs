@@ -1,5 +1,5 @@
-﻿using ChooseMemeWebServer.Core.Interfaces;
-using ChooseMemeWebServer.Domain;
+﻿using ChooseMemeWebServer.Core.Common;
+using ChooseMemeWebServer.Core.Interfaces;
 using MediatR;
 using System.Text.Json;
 

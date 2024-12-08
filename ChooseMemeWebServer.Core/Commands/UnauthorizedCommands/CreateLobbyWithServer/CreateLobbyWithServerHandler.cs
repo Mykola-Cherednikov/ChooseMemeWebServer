@@ -20,7 +20,7 @@ namespace ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.CreateLobbyWith
         public Task<CreateLobbyWithServerResponse> Handle(CreateLobbyWithServerCommand request, CancellationToken cancellationToken)
         {
             CreateLobbyWithServerResponse response = new();
-            Lobby lobby = _lobbyService.CreateLobbyWithServer(request.WebSocket);
+            Lobby lobby = _lobbyService.CreateLobby();
             response.Lobby = lobby;
             response.LobbyDTO = _mapper.Map<LobbyDTO>(lobby);
             response.Success = true;
