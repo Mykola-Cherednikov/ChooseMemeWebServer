@@ -13,13 +13,15 @@ namespace ChooseMemeWebServer.Core.Services
     {
         private readonly IWebSocketSender _sender;
         private readonly IMapper _mapper;
+        private readonly IPlayerService _playerService;
 
         private static readonly Dictionary<string, Lobby> activeLobbies = new Dictionary<string, Lobby>();
 
-        public LobbyService(IWebSocketSender sender, IMapper mapper)
+        public LobbyService(IWebSocketSender sender, IMapper mapper, IPlayerService playerService)
         {
             _sender = sender;
             _mapper = mapper;
+            _playerService = playerService;
         }
 
         public Lobby CreateLobby()
@@ -87,14 +89,7 @@ namespace ChooseMemeWebServer.Core.Services
 
         public async Task<Lobby?> BotJoinToLobby(string code)
         {
-            var nameGenerator = new PersonNameGenerator();
-            var name = nameGenerator.GenerateRandomFirstName();
-
-            Player bot = new Player()
-            {
-                Username = "Bot " + name,
-                IsBot = true
-            };
+            var bot = _playerService.AddBot();
 
             return await JoinToLobby(code, bot);
         }

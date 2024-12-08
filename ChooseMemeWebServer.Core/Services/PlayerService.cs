@@ -3,6 +3,7 @@ using ChooseMemeWebServer.Core.Common;
 using ChooseMemeWebServer.Core.DTO;
 using ChooseMemeWebServer.Core.Interfaces;
 using ChooseMemeWebServer.Domain.Models;
+using RandomNameGeneratorLibrary;
 using System.Text.Json;
 
 namespace ChooseMemeWebServer.Core.Services
@@ -30,6 +31,22 @@ namespace ChooseMemeWebServer.Core.Services
             onlinePlayers.Add(player.Id, player);
 
             return player;
+        }
+
+        public Player AddBot()
+        {
+            var nameGenerator = new PersonNameGenerator();
+            var name = nameGenerator.GenerateRandomFirstName();
+
+            Player bot = new Player()
+            {
+                Username = "Bot " + name,
+                IsBot = true
+            };
+
+            onlinePlayers.Add(bot.Id, bot);
+
+            return bot;
         }
 
         public Player? GetOnlinePlayer(string playerId)
