@@ -68,7 +68,7 @@ namespace ChooseMemeWebServer.Core.Services
 
         public void SetPlayerIsReady(Player player)
         {
-            player.IsReady = true;
+            player.IsReady = !player.IsReady;
 
             var payload = new WebSocketData() { CommandTypeName = "PlayerIsReady", Data = JsonSerializer.Serialize(_mapper.Map<PlayerDTO>(player)) };
             _sender.SendMessageToServer(player.Lobby, payload);

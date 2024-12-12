@@ -14,14 +14,16 @@ namespace ChooseMemeWebServer.Core.Services
         private readonly IWebSocketSender _sender;
         private readonly IMapper _mapper;
         private readonly IPlayerService _playerService;
+        private readonly IGameService _gameService;
 
         private static readonly Dictionary<string, Lobby> activeLobbies = new Dictionary<string, Lobby>();
 
-        public LobbyService(IWebSocketSender sender, IMapper mapper, IPlayerService playerService)
+        public LobbyService(IWebSocketSender sender, IMapper mapper, IPlayerService playerService, IGameService gameService)
         {
             _sender = sender;
             _mapper = mapper;
             _playerService = playerService;
+            _gameService = gameService;
         }
 
         public Lobby CreateLobby()
