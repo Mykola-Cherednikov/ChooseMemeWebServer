@@ -6,14 +6,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChooseMemeWebServer.Core.Commands.PlayerCommands.PlayerLeave
+namespace ChooseMemeWebServer.Core.Commands.PlayerCommands
 {
+    public class PlayerLeaveCommand : PlayerBaseCommand
+    {
+    }
+
     public class PlayerLeaveHandler : IRequestHandler<PlayerLeaveCommand>
     {
         private readonly ILobbyService _lobbyService;
 
-        public PlayerLeaveHandler(ILobbyService lobbyService) 
-        { 
+        public PlayerLeaveHandler(ILobbyService lobbyService)
+        {
             _lobbyService = lobbyService;
         }
 

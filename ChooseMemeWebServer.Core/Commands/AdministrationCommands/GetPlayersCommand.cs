@@ -2,9 +2,18 @@
 using ChooseMemeWebServer.Core.DTO;
 using ChooseMemeWebServer.Core.Interfaces;
 using MediatR;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace ChooseMemeWebServer.Core.Commands.AdministrationCommands.GetPlayers
+namespace ChooseMemeWebServer.Core.Commands.AdministrationCommands
 {
+    public class GetPlayersCommand : IRequest<GetPlayersResponse>
+    {
+    }
+
     public class GetPlayersHandler : IRequestHandler<GetPlayersCommand, GetPlayersResponse>
     {
         private readonly IPlayerService _playerService;
@@ -22,5 +31,10 @@ namespace ChooseMemeWebServer.Core.Commands.AdministrationCommands.GetPlayers
 
             return Task.FromResult(new GetPlayersResponse() { Players = _mapper.Map<List<PlayerDTO>>(list) });
         }
+    }
+
+    public class GetPlayersResponse
+    {
+        public List<PlayerDTO> Players { get; set; } = null!;
     }
 }

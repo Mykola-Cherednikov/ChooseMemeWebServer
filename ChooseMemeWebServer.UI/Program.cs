@@ -18,6 +18,7 @@ namespace ChooseMemeWebServer.UI
             builder.Services.AddTransient<IPlayerService, PlayerService>();
             builder.Services.AddTransient<IWebSocketCommandService, WebSocketCommandService>();
             builder.Services.AddTransient<IWebSocketSender, WebSocketSender>();
+            builder.Services.AddTransient<IGameService, GameService>();
             builder.Services.AddTransient<WebSocketConnectionManager>();
             builder.Services.AddAutoMapper(config =>
             {

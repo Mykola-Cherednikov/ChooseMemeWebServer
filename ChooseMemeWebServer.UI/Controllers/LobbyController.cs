@@ -1,7 +1,4 @@
-﻿using ChooseMemeWebServer.Core.Commands.AdministrationCommands.AddBotToLobby;
-using ChooseMemeWebServer.Core.Commands.AdministrationCommands.CreateLobby;
-using ChooseMemeWebServer.Core.Commands.AdministrationCommands.GetLobbies;
-using ChooseMemeWebServer.Core.Commands.AdministrationCommands.GetLobby;
+﻿using ChooseMemeWebServer.Core.Commands.AdministrationCommands;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

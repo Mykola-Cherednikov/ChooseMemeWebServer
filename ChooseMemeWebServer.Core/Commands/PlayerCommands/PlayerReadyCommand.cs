@@ -1,8 +1,13 @@
 ﻿using ChooseMemeWebServer.Core.Interfaces;
 using MediatR;
 
-namespace ChooseMemeWebServer.Core.Commands.PlayerCommands.PlayerReady
+namespace ChooseMemeWebServer.Core.Commands.PlayerCommands
 {
+    public class PlayerReadyCommand : PlayerBaseCommand
+    {
+
+    }
+
     public class PlayerReadyHandler : IRequestHandler<PlayerReadyCommand>
     {
         private readonly IPlayerService _playerService;

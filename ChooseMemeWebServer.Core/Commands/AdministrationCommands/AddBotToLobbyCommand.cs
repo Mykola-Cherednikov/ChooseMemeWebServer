@@ -1,11 +1,15 @@
 ﻿using AutoMapper;
 using ChooseMemeWebServer.Core.DTO;
 using ChooseMemeWebServer.Core.Interfaces;
-using ChooseMemeWebServer.Domain.Models;
 using MediatR;
 
-namespace ChooseMemeWebServer.Core.Commands.AdministrationCommands.AddBotToLobby
+namespace ChooseMemeWebServer.Core.Commands.AdministrationCommands
 {
+    public class AddBotToLobbyCommand : IRequest<AddBotToLobbyResponse>
+    {
+        public string Code { get; set; } = string.Empty;
+    }
+
     public class AddBotToLobbyHandler : IRequestHandler<AddBotToLobbyCommand, AddBotToLobbyResponse>
     {
         private readonly ILobbyService _lobbyService;
@@ -26,5 +30,10 @@ namespace ChooseMemeWebServer.Core.Commands.AdministrationCommands.AddBotToLobby
 
             return response;
         }
+    }
+
+    public class AddBotToLobbyResponse
+    {
+        public LobbyDTO Lobby { get; set; } = null!;
     }
 }

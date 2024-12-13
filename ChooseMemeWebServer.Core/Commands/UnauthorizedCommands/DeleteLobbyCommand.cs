@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChooseMemeWebServer.Core.Commands.PlayerCommands.PlayerLeave
+namespace ChooseMemeWebServer.Core.Commands.UnauthorizedCommands
 {
-    public class PlayerLeaveCommand : PlayerBaseCommand
+    internal class DeleteLobbyCommand
     {
     }
 }

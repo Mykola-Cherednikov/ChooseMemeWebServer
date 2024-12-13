@@ -1,8 +1,14 @@
 ﻿using ChooseMemeWebServer.Core.Interfaces;
+using ChooseMemeWebServer.Domain.Models;
 using MediatR;
 
-namespace ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.CreatePlayer
+namespace ChooseMemeWebServer.Core.Commands.UnauthorizedCommands
 {
+    public class CreatePlayerCommand : IRequest<CreatePlayerResponse>
+    {
+        public string Username { get; set; } = string.Empty;
+    }
+
     public class CreatePlayerHandler : IRequestHandler<CreatePlayerCommand, CreatePlayerResponse>
     {
         private readonly IPlayerService _playerService;
@@ -20,5 +26,10 @@ namespace ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.CreatePlayer
 
             return Task.FromResult(response);
         }
+    }
+
+    public class CreatePlayerResponse
+    {
+        public Player Player { get; set; } = null!;
     }
 }

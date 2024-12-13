@@ -3,8 +3,13 @@ using ChooseMemeWebServer.Core.DTO;
 using ChooseMemeWebServer.Core.Interfaces;
 using MediatR;
 
-namespace ChooseMemeWebServer.Core.Commands.AdministrationCommands.CreateLobby
+namespace ChooseMemeWebServer.Core.Commands.AdministrationCommands
 {
+    public class CreateLobbyCommand : IRequest<CreateLobbyResponse>
+    {
+
+    }
+
     public class CreateLobbyHandler : IRequestHandler<CreateLobbyCommand, CreateLobbyResponse>
     {
         private readonly ILobbyService _lobbyService;
@@ -23,5 +28,10 @@ namespace ChooseMemeWebServer.Core.Commands.AdministrationCommands.CreateLobby
 
             return Task.FromResult(response);
         }
+    }
+
+    public class CreateLobbyResponse
+    {
+        public LobbyDTO Lobby { get; set; } = null!;
     }
 }

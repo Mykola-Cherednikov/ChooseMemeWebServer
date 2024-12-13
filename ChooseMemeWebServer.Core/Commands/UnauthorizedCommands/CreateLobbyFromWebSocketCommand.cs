@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
-using ChooseMemeWebServer.Core.DTO;
 using ChooseMemeWebServer.Core.Interfaces;
 using ChooseMemeWebServer.Domain.Models;
 using MediatR;
 
-namespace ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.CreateLobbyFromWebSocket
+namespace ChooseMemeWebServer.Core.Commands.UnauthorizedCommands
 {
+    public class CreateLobbyFromWebSocketCommand : IRequest<CreateLobbyFromWebSocketResponse>
+    {
+    }
+
     public class CreateLobbyFromWebSocketHandler : IRequestHandler<CreateLobbyFromWebSocketCommand, CreateLobbyFromWebSocketResponse>
     {
         private readonly ILobbyService _lobbyService;
@@ -24,5 +27,10 @@ namespace ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.CreateLobbyFrom
             response.Lobby = lobby;
             return Task.FromResult(response);
         }
+    }
+
+    public class CreateLobbyFromWebSocketResponse
+    {
+        public Lobby Lobby { get; set; } = null!;
     }
 }

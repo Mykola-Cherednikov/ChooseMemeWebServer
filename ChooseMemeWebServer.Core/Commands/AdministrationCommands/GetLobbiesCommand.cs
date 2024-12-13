@@ -3,8 +3,12 @@ using ChooseMemeWebServer.Core.DTO;
 using ChooseMemeWebServer.Core.Interfaces;
 using MediatR;
 
-namespace ChooseMemeWebServer.Core.Commands.AdministrationCommands.GetLobbies
+namespace ChooseMemeWebServer.Core.Commands.AdministrationCommands
 {
+    public class GetLobbiesCommand : IRequest<GetLobbiesResponse>
+    {
+    }
+
     public class GetLobbiesHandler : IRequestHandler<GetLobbiesCommand, GetLobbiesResponse>
     {
         private readonly ILobbyService _lobbyService;
@@ -22,5 +26,10 @@ namespace ChooseMemeWebServer.Core.Commands.AdministrationCommands.GetLobbies
             response.Lobbies = _mapper.Map<List<LobbyDTO>>(_lobbyService.GetLobbies());
             return Task.FromResult(response);
         }
+    }
+
+    public class GetLobbiesResponse
+    {
+        public List<LobbyDTO> Lobbies { get; set; } = null!;
     }
 }

@@ -1,4 +1,4 @@
-﻿using ChooseMemeWebServer.Core.Commands.AdministrationCommands.GetPlayers;
+﻿using ChooseMemeWebServer.Core.Commands.AdministrationCommands;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

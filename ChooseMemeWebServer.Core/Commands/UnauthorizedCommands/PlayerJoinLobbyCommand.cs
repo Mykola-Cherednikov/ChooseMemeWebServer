@@ -1,10 +1,17 @@
-﻿using AutoMapper;
-using ChooseMemeWebServer.Core.Interfaces;
+﻿using ChooseMemeWebServer.Core.Interfaces;
+using ChooseMemeWebServer.Domain.Models;
 using MediatR;
 
-namespace ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.PlayerJoinLobby
+namespace ChooseMemeWebServer.Core.Commands.UnauthorizedCommands
 {
-    internal class PlayerJoinLobbyHandler : IRequestHandler<PlayerJoinLobbyCommand, PlayerJoinLobbyResponse>
+    public class PlayerJoinLobbyCommand : IRequest<PlayerJoinLobbyResponse>
+    {
+        public string LobbyCode { get; set; } = string.Empty;
+
+        public Player Player { get; set; } = null!;
+    }
+
+    public class PlayerJoinLobbyHandler : IRequestHandler<PlayerJoinLobbyCommand, PlayerJoinLobbyResponse>
     {
         private readonly ILobbyService _lobbyService;
 
@@ -24,5 +31,12 @@ namespace ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.PlayerJoinLobby
 
             return response;
         }
+    }
+
+    public class PlayerJoinLobbyResponse
+    {
+        public bool IsSuccess { get; set; }
+
+        public Lobby? Lobby { get; set; } = null!;
     }
 }

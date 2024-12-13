@@ -14,6 +14,7 @@ namespace ChooseMemeWebServer.Core.Services
         private readonly IMapper _mapper;
 
         private static readonly Dictionary<string, Player> onlinePlayers = new Dictionary<string, Player>();
+        private static readonly Dictionary<string, Player> onlineBots = new Dictionary<string, Player>();
 
         public PlayerService(IWebSocketSender sender, IMapper mapper)
         {
@@ -44,16 +45,26 @@ namespace ChooseMemeWebServer.Core.Services
                 IsBot = true
             };
 
-            onlinePlayers.Add(bot.Id, bot);
+            onlineBots.Add(bot.Id, bot);
 
             return bot;
         }
 
         public Player? GetOnlinePlayer(string playerId)
         {
-            onlinePlayers.TryGetValue(playerId, out Player? player);
+            Player? resultPlayer = new Player();
 
-            return player;
+            if(onlinePlayers.TryGetValue(playerId, out Player? player))
+            {
+                resultPlayer = player;
+            }
+
+            if(onlineBots.TryGetValue(playerId, out Player? bot))
+            {
+                resultPlayer = bot;
+            }
+
+            return resultPlayer;
         }
 
         public List<Player> GetOnlinePlayers()
@@ -61,9 +72,22 @@ namespace ChooseMemeWebServer.Core.Services
             return onlinePlayers.Values.ToList();
         }
 
+        public List<Player> GetOnlineBots()
+        {
+            return onlineBots.Values.ToList();
+        }
+
         public void RemoveOnlinePlayer(Player player)
         {
-            onlinePlayers.Remove(player.Id);
+            if (onlinePlayers.ContainsKey(player.Id))
+            {
+                onlinePlayers.Remove(player.Id);
+            }
+
+            if (onlineBots.ContainsKey(player.Id))
+            {
+                onlineBots.Remove(player.Id);
+            }
         }
 
         public void SetPlayerIsReady(Player player)

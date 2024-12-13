@@ -3,8 +3,13 @@ using ChooseMemeWebServer.Core.Interfaces;
 using MediatR;
 using System.Text.Json;
 
-namespace ChooseMemeWebServer.Core.Commands.PlayerCommands.HandlePlayerCommand
+namespace ChooseMemeWebServer.Core.Commands.PlayerCommands
 {
+    public class HandlePlayerCommandCommand : PlayerBaseCommand
+    {
+        public string WebSocketData { get; set; } = string.Empty;
+    }
+
     public class HandlePlayerCommandHandler : IRequestHandler<HandlePlayerCommandCommand>
     {
         private readonly IWebSocketCommandService _commandService;

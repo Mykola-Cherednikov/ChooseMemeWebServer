@@ -1,18 +1,20 @@
 ﻿using ChooseMemeWebServer.Core.Interfaces;
+using ChooseMemeWebServer.Domain.Models;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.ServerJoinLobby
+namespace ChooseMemeWebServer.Core.Commands.UnauthorizedCommands
 {
+    public class ServerJoinLobbyCommand : IRequest
+    {
+        public Lobby Lobby { get; set; } = null!;
+    }
+
     public class ServerJoinLobbyHandler : IRequestHandler<ServerJoinLobbyCommand>
     {
         private readonly ILobbyService _lobbyService;
 
-        public ServerJoinLobbyHandler(ILobbyService lobbyService) { 
+        public ServerJoinLobbyHandler(ILobbyService lobbyService)
+        {
             _lobbyService = lobbyService;
         }
 

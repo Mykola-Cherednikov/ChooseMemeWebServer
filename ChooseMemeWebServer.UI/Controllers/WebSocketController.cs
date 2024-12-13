@@ -1,15 +1,11 @@
-﻿using ChooseMemeWebServer.Core.Commands.PlayerCommands.HandlePlayerCommand;
-using ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.CreateLobbyFromWebSocket;
-using ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.CreatePlayer;
-using ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.PlayerJoinLobby;
-using ChooseMemeWebServer.Core.Commands.UnauthorizedCommands.ServerJoinLobby;
+﻿using ChooseMemeWebServer.Core.Commands.PlayerCommands;
+using ChooseMemeWebServer.Core.Commands.UnauthorizedCommands;
 using ChooseMemeWebServer.Core.Common;
 using ChooseMemeWebServer.Domain.Models;
 using ChooseMemeWebServer.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.WebSockets;
-using System.Text.Json;
 
 namespace ChooseMemeWebServer.UI.Controllers
 {
