@@ -37,7 +37,7 @@ namespace ChooseMemeWebServer.Core.Services
 
         public async Task<Lobby> ServerJoinToLobby(Lobby lobby)
         {
-            var payload = new WebSocketData() { CommandTypeName = "CreateLobby", Data = JsonSerializer.Serialize(_mapper.Map<LobbyDTO>(lobby)) };
+            var payload = new WebSocketData(CommandType.CreateLobby, _mapper.Map<LobbyDTO>(lobby));
 
             await _sender.SendMessageToServer(lobby, payload);
 
@@ -64,11 +64,11 @@ namespace ChooseMemeWebServer.Core.Services
 
             lobby.PlayerJoin(player);
 
-            var payload = new WebSocketData() { CommandTypeName = "PlayerJoin", Data = JsonSerializer.Serialize(_mapper.Map<PlayerDTO>(player)) };
+            var payload = new WebSocketData(CommandType.PlayerJoin, _mapper.Map<PlayerDTO>(player));
 
             await _sender.SendMessageToServer(lobby, payload);
 
-            payload = new WebSocketData() { CommandTypeName = "PlayerJoin" };
+            payload = new WebSocketData(CommandType.PlayerJoin);
 
             await _sender.SendMessageToPlayer(player, payload);
 
@@ -102,7 +102,7 @@ namespace ChooseMemeWebServer.Core.Services
 
             _playerService.RemoveOnlinePlayer(player);
 
-            var payload = new WebSocketData { CommandTypeName = "PlayerLeave", Data = JsonSerializer.Serialize(_mapper.Map<PlayerDTO>(player)) };
+            var payload = new WebSocketData(CommandType.PlayerLeave, _mapper.Map<PlayerDTO>(player));
 
             await _sender.SendMessageToServer(lobby, payload);
 
@@ -119,12 +119,22 @@ namespace ChooseMemeWebServer.Core.Services
         {
             player.IsLeader = true;
 
-            var payload = new WebSocketData { CommandTypeName = "NewLeader", Data = JsonSerializer.Serialize(_mapper.Map<PlayerDTO>(player)) };
+            var payload = new WebSocketData(CommandType.NewLeader, _mapper.Map<PlayerDTO>(player));
 
             await _sender.SendMessageToServer(lobby, payload);
             await _sender.SendMessageToPlayer(player, payload);
 
             return lobby;
+        }
+
+        public async Task ForceStartGame(Player player, Lobby lobby)
+        {
+            if (!player.IsLeader)
+            {
+                return;
+            }
+
+            var payload = new WebSocketData(CommandType.NewLeader);
         }
 
         private string GenerateCode(int length)

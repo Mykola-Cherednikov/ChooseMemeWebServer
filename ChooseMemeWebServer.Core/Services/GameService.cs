@@ -10,7 +10,7 @@ namespace ChooseMemeWebServer.Core.Services
             
         }
 
-        public void StartGame(Lobby lobby)
+        public void CreateGame(Lobby lobby)
         {
             
         }

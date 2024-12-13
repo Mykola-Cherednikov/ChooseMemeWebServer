@@ -70,7 +70,7 @@ namespace ChooseMemeWebServer.Core.Services
         {
             player.IsReady = !player.IsReady;
 
-            var payload = new WebSocketData() { CommandTypeName = "PlayerIsReady", Data = JsonSerializer.Serialize(_mapper.Map<PlayerDTO>(player)) };
+            var payload = new WebSocketData(CommandType.PlayerIsReady, _mapper.Map<PlayerDTO>(player));
             _sender.SendMessageToServer(player.Lobby, payload);
         }
     }

@@ -9,7 +9,7 @@ namespace ChooseMemeWebServer.Core.Interfaces
 {
     public interface IGameService
     {
-        public void StartGame(Lobby lobby);
+        public void CreateGame(Lobby lobby);
 
         public void HandleGame();
     }
