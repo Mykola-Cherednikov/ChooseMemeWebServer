@@ -4,6 +4,8 @@ namespace ChooseMemeWebServer.Core.Common
 {
     public class WebSocketData
     {
+        public WebSocketData() { }
+
         public WebSocketData(CommandType commandType)
         {
             string? typeName = Enum.GetName(typeof(CommandType), commandType);

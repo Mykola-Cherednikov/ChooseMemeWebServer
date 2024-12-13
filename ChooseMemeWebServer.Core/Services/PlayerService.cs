@@ -4,7 +4,6 @@ using ChooseMemeWebServer.Core.DTO;
 using ChooseMemeWebServer.Core.Interfaces;
 using ChooseMemeWebServer.Domain.Models;
 using RandomNameGeneratorLibrary;
-using System.Text.Json;
 
 namespace ChooseMemeWebServer.Core.Services
 {
@@ -54,12 +53,12 @@ namespace ChooseMemeWebServer.Core.Services
         {
             Player? resultPlayer = new Player();
 
-            if(onlinePlayers.TryGetValue(playerId, out Player? player))
+            if (onlinePlayers.TryGetValue(playerId, out Player? player))
             {
                 resultPlayer = player;
             }
 
-            if(onlineBots.TryGetValue(playerId, out Player? bot))
+            if (onlineBots.TryGetValue(playerId, out Player? bot))
             {
                 resultPlayer = bot;
             }

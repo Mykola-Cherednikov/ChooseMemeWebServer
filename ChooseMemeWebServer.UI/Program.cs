@@ -35,6 +35,9 @@ namespace ChooseMemeWebServer.UI
 
             app.UseSwagger();
             app.UseSwaggerUI();
+
+            app.InitData().GetAwaiter().GetResult();
+
             app.Run();
         }
     }

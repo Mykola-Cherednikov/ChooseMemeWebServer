@@ -6,6 +6,8 @@ namespace ChooseMemeWebServer.Core.Interfaces
     {
         public List<Player> GetOnlinePlayers();
 
+        public List<Player> GetOnlineBots();
+
         public Player AddOnlinePlayer(string username);
 
         public Player AddBot();

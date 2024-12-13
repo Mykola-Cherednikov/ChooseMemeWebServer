@@ -20,5 +20,13 @@ namespace ChooseMemeWebServer.UI.Controllers
 
             return Ok(response.Players);
         }
+
+        [HttpGet("/GetOnlineBots")]
+        public async Task<IActionResult> GetOnlineBots()
+        {
+            var response = await _mediator.Send(new GetBotsCommand());
+
+            return Ok(response.Bots);
+        }
     }
 }

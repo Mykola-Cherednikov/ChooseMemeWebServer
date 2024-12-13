@@ -38,7 +38,7 @@ namespace ChooseMemeWebServer.UI.Controllers
 
                 using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
 
-                CreatePlayerResponse playerResponse = new CreatePlayerResponse();
+                CreatePlayerResponse playerResponse = await _mediator.Send(new CreatePlayerCommand() { Username = username });
 
                 Player player = playerResponse.Player;
 
