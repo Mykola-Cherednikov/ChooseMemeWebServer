@@ -1,9 +1,13 @@
-﻿namespace ChooseMemeWebServer.Core.Interfaces
+﻿using ChooseMemeWebServer.Core.Common;
+
+namespace ChooseMemeWebServer.Core.Interfaces
 {
     public interface ITimerService
     {
-        public void AddTimer(object obj, int milliseconds, Action action, bool isRewriting = true);
+        public TimerData? AddTimer(object obj, int milliseconds, Action action, bool isRewriting = true);
 
-        public void RemoveTimer(object obj);
+        public void ForceTimer(object obj);
+
+        public TimerData? RemoveTimer(object obj);
     }
 }

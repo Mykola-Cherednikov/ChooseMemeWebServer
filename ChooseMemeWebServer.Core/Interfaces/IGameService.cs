@@ -11,6 +11,6 @@ namespace ChooseMemeWebServer.Core.Interfaces
     {
         public void StartGame(Lobby lobby);
 
-        public void HandleHame();
+        public void HandleGame();
     }
 }

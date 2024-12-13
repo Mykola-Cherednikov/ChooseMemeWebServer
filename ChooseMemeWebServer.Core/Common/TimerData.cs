@@ -14,6 +14,6 @@ namespace ChooseMemeWebServer.Core.Common
 
         public Task Task { get; set; } = null!;
 
-        public bool IsRewriting { get; set; }
+        public bool IsUnremovable { get; set; }
     }
 }

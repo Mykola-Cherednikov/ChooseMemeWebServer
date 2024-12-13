@@ -1,22 +1,18 @@
 ﻿using ChooseMemeWebServer.Core.Common;
 using ChooseMemeWebServer.Core.Interfaces;
+using System.Collections.Concurrent;
 
 namespace ChooseMemeWebServer.Core.Services
 {
     public class TimerService : ITimerService
     {
-        private static readonly Dictionary<object, TimerData> activeTimers = new Dictionary<object, TimerData>();
+        private static readonly ConcurrentDictionary<object, TimerData> activeTimers = new ConcurrentDictionary<object, TimerData>();
 
-        public void AddTimer(object obj, int milliseconds, Action action, bool isRewriting = true)
+        public TimerData? AddTimer(object obj, int milliseconds, Action action, bool isUnremovable = true)
         {
-            if (activeTimers.ContainsKey(obj))
+            if (activeTimers.TryGetValue(obj, out TimerData? timerData))
             {
-                if (!isRewriting)
-                {
-                    return;
-                }
-
-                RemoveTimer(obj);
+                return RemoveTimer(obj);
             }
 
             CancellationTokenSource cts = new CancellationTokenSource();
@@ -28,31 +24,45 @@ namespace ChooseMemeWebServer.Core.Services
                 RemoveTimer(obj);
             });
 
-            TimerData timerData = new()
+            timerData = new()
             {
                 CancellationTokenSource = cts,
                 Task = timer,
-                IsRewriting = isRewriting,
+                IsUnremovable = isUnremovable,
                 Action = action
             };
 
-            activeTimers.Add(obj, timerData);
+            activeTimers.TryAdd(obj, timerData);
+            return timerData;
         }
 
-        public void ForceTimer()
+        public void ForceTimer(object obj)
         {
+            var timerData = RemoveTimer(obj);
 
-        }
-
-        public void RemoveTimer(object obj)
-        {
-            if (!activeTimers.TryGetValue(obj, out TimerData? timerData))
+            if(timerData == null)
             {
                 return;
             }
 
-            timerData.CancellationTokenSource.Cancel();
-            activeTimers.Remove(obj);
+            timerData.Action.Invoke();
+        }
+
+        public TimerData? RemoveTimer(object obj)
+        {
+            if (!activeTimers.TryRemove(obj, out var timerData))
+            {
+                return null;
+            }
+
+            if (timerData.IsUnremovable)
+            {
+                return null;
+            }
+
+            timerData.CancellationTokenSource.Cancel();   
+
+            return timerData;
         }
     }
 }
