@@ -134,7 +134,9 @@ namespace ChooseMemeWebServer.Core.Services
                 return;
             }
 
-            var payload = new WebSocketData(CommandType.NewLeader);
+            var payload = new WebSocketData(CommandType.ForceStartGame);
+
+            await _sender.SendMessageToServer(lobby, payload);
         }
 
         private string GenerateCode(int length)

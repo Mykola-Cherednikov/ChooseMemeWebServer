@@ -93,6 +93,15 @@ namespace ChooseMemeWebServer.Core.Services
         {
             player.IsReady = !player.IsReady;
 
+            if(player.Lobby.Players.All(p => p.IsReady))
+            {
+                //TODO
+            }
+            else
+            {
+
+            }
+
             var payload = new WebSocketData(CommandType.PlayerIsReady, _mapper.Map<PlayerDTO>(player));
             _sender.SendMessageToServer(player.Lobby, payload);
         }

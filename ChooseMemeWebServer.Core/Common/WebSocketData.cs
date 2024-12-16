@@ -42,6 +42,8 @@ namespace ChooseMemeWebServer.Core.Common
         PlayerJoin,
         PlayerLeave,
         NewLeader,
-        PlayerIsReady
+        PlayerIsReady,
+        StartGame,
+        ForceStartGame
     }
 }
