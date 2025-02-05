@@ -25,7 +25,7 @@ namespace ChooseMemeWebServer.Infrastructure.Extensions
 
             BetterWebSocketReceiveResult result = new BetterWebSocketReceiveResult(receiveResult.Count,
                 (BetterWebSocketMessageType)receiveResult.MessageType, receiveResult.EndOfMessage, (BetterWebSocketCloseStatus?)receiveResult.CloseStatus,
-            receiveResult.CloseStatusDescription, buffer);
+            receiveResult.CloseStatusDescription, buffer[..receiveResult.Count]);
 
             return result;
         }

@@ -5,9 +5,10 @@ namespace ChooseMemeWebServer.Application.Common.WebSocket
 {
     public abstract class WebSocketMessage
     {
-        public string WebSocketData { get; set; } = string.Empty;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string WebSocketData { get; set; } = null!;
 
-        public string MessageTypeName { get; set; } = string.Empty;
+        public string MessageTypeName { get; set; } = null!;
     }
 
     public class WebSocketRequestMessage : WebSocketMessage

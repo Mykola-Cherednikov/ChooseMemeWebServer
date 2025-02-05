@@ -86,7 +86,11 @@ namespace ChooseMemeWebServer.Application.Services
         //WebSocket
         public void SetPlayerIsReady(SetPlayerIsReadyDTO data)
         {
-            data.Player.IsReady = !data.Player.IsReady;
+            data.Player.IsReady = true;
+
+            var payload = new WebSocketResponseMessage(WebSocketMessageResponseType.OnPlayerIsReady, mapper.Map<PlayerDTO>(data.Player));
+            sender.SendMessageToServer(data.Lobby, payload);
+            sender.SendMessageToPlayer(data.Player, payload);
 
             if (data.Lobby.Players.All(p => p.IsReady))
             {
@@ -96,9 +100,6 @@ namespace ChooseMemeWebServer.Application.Services
             {
 
             }
-
-            var payload = new WebSocketResponseMessage(WebSocketMessageResponseType.OnPlayerIsReady, mapper.Map<PlayerDTO>(data.Player));
-            sender.SendMessageToServer(data.Lobby, payload);
         }
     }
 }

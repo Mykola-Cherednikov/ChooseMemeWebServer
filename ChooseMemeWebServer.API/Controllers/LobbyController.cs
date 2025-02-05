@@ -6,13 +6,13 @@ namespace ChooseMemeWebServer.API.Controllers
     public class LobbyController(ILobbyService lobbyService) : ControllerBase
     {
         [HttpGet("/GetLobbies")]
-        public async Task<IActionResult> GetLobbies()
+        public IActionResult GetLobbies()
         {
             return Ok(lobbyService.GetLobbies());
         }
 
         [HttpGet("/GetLobby")]
-        public async Task<IActionResult> GetLobby([FromQuery] string code)
+        public IActionResult GetLobby([FromQuery] string code)
         {
             return Ok(lobbyService.GetLobby(code));
         }
