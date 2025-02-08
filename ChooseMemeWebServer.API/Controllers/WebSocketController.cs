@@ -10,7 +10,7 @@ namespace ChooseMemeWebServer.API.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
     public class WebSocketController(IWebSocketConnectionService connectionService, IPlayerService playerService,
-        IWebSocketCommandService commandService, ILobbyService lobbyService, IServerService serverService) : ControllerBase
+        IWebSocketCommandService commandService, ILobbyService lobbyService, IServerService serverService, IConfiguration configuration) : ControllerBase
     {
         [Route("/wsClient")]
         public async Task<IActionResult> ClientConnect(string username, string lobbyCode)
@@ -55,7 +55,7 @@ namespace ChooseMemeWebServer.API.Controllers
         }
 
         [Route("/wsServer")]
-        public async Task<IActionResult> ServerConnect()
+        public async Task<IActionResult> ServerConnect(string lobbyCode)
         {
             if (HttpContext.WebSockets.IsWebSocketRequest)
             {
@@ -65,7 +65,28 @@ namespace ChooseMemeWebServer.API.Controllers
 
                 connectionService.AddServerConnection(server, webSocket);
 
-                Lobby lobby = lobbyService.CreateLobby();
+                Lobby lobby;
+
+                if (bool.TryParse(configuration["IsTesting"], out bool isTesting) && isTesting && !string.IsNullOrEmpty(lobbyCode))
+                {
+                    var possibleLobby = lobbyService.GetLobby(lobbyCode);
+
+                    if (possibleLobby == null)
+                    {
+                        return BadRequest("Lobby not found");
+                    }
+
+                    if (possibleLobby.Server != null)
+                    {
+                        return BadRequest($"Lobby already have server");
+                    }
+
+                    lobby = possibleLobby;
+                }
+                else
+                {
+                    lobby = lobbyService.CreateLobby();
+                }
 
                 await lobbyService.AddServerToLobby(lobby, server);
 
