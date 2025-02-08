@@ -1,6 +1,6 @@
 ﻿using ChooseMemeWebServer.Application.DTO;
 using ChooseMemeWebServer.Application.DTO.LobbyService;
-using ChooseMemeWebServer.Core.Entities;
+using ChooseMemeWebServer.Application.Models;
 
 namespace ChooseMemeWebServer.Application.Interfaces
 {
@@ -8,11 +8,11 @@ namespace ChooseMemeWebServer.Application.Interfaces
     {
         public Lobby? GetLobby(string code);
 
-        public List<LobbyDTO> GetLobbies();
+        public List<Lobby> GetLobbies();
 
         public Lobby CreateLobby();
 
-        public Task<Lobby> ServerJoinToLobby(Lobby lobby);
+        public Task AddServerToLobby(Lobby lobby, Server server);
 
         public Task<Lobby?> AddPlayerToLobby(string code, Player player);
 

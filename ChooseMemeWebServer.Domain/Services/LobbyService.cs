@@ -3,8 +3,7 @@ using ChooseMemeWebServer.Application.Common.WebSocket;
 using ChooseMemeWebServer.Application.DTO;
 using ChooseMemeWebServer.Application.DTO.LobbyService;
 using ChooseMemeWebServer.Application.Interfaces;
-using ChooseMemeWebServer.Core.Entities;
-using System.Data;
+using ChooseMemeWebServer.Application.Models;
 using System.Text;
 
 namespace ChooseMemeWebServer.Application.Services
@@ -15,25 +14,25 @@ namespace ChooseMemeWebServer.Application.Services
 
         public Lobby CreateLobby()
         {
-            Lobby lobby = new Lobby() { Code = GenerateCode(6) };
+            Lobby lobby = new Lobby() { Code = GenerateCode(6)};
 
             activeLobbies.Add(lobby.Code, lobby);
 
             return lobby;
         }
 
-        public async Task<Lobby> ServerJoinToLobby(Lobby lobby)
+        public async Task AddServerToLobby(Lobby lobby, Server server)
         {
+            lobby.Server = server;
+
             var payload = new WebSocketResponseMessage(WebSocketMessageResponseType.OnCreateLobby, mapper.Map<LobbyDTO>(lobby));
 
             await sender.SendMessageToServer(lobby, payload);
-
-            return lobby;
         }
 
-        public List<LobbyDTO> GetLobbies()
+        public List<Lobby> GetLobbies()
         {
-            return mapper.Map<List<LobbyDTO>>(activeLobbies.Values.ToList());
+            return activeLobbies.Values.ToList();
         }
 
         public Lobby? GetLobby(string code)

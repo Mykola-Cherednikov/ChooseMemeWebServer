@@ -1,6 +1,6 @@
 ﻿using ChooseMemeWebServer.Application.Common.WebSocket;
 using ChooseMemeWebServer.Application.DTO;
-using ChooseMemeWebServer.Core.Entities;
+using ChooseMemeWebServer.Application.Models;
 
 namespace ChooseMemeWebServer.Application.Interfaces
 {

@@ -1,4 +1,4 @@
-﻿using ChooseMemeWebServer.Core.Entities;
+﻿using ChooseMemeWebServer.Application.Models;
 
 namespace ChooseMemeWebServer.Application.Common.WebSocket
 {

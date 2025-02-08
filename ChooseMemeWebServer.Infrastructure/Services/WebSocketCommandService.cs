@@ -3,8 +3,7 @@ using ChooseMemeWebServer.Application.DTO;
 using ChooseMemeWebServer.Application.DTO.LobbyService;
 using ChooseMemeWebServer.Application.DTO.PlayerService;
 using ChooseMemeWebServer.Application.Interfaces;
-using ChooseMemeWebServer.Application.Services;
-using ChooseMemeWebServer.Core.Entities;
+using ChooseMemeWebServer.Application.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 

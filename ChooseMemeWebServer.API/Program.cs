@@ -2,7 +2,6 @@ using ChooseMemeWebServer.API;
 using ChooseMemeWebServer.Application.Common.Mappings;
 using ChooseMemeWebServer.Application.Interfaces;
 using ChooseMemeWebServer.Application.Services;
-using ChooseMemeWebServer.Core.Entities;
 using ChooseMemeWebServer.Infrastructure.Services;
 using System.Reflection;
 
@@ -23,12 +22,12 @@ namespace ChooseMemeWebServer
             builder.Services.AddScoped<IWebSocketSenderService, WebSocketSenderService>();
             builder.Services.AddScoped<IWebSocketConnectionService, WebSocketConnectionService>();
             builder.Services.AddScoped<IWebSocketCommandService, WebSocketCommandService>();
+            builder.Services.AddScoped<IServerService, ServerService>();
 
             builder.Services.AddAutoMapper(config =>
             {
                 config.AddProfile(new AssemblyMappingProfile(Assembly.GetExecutingAssembly()));
                 config.AddProfile(new AssemblyMappingProfile(typeof(AssemblyMappingProfile).Assembly));
-                config.AddProfile(new AssemblyMappingProfile(typeof(Lobby).Assembly));
             });
 
             var app = builder.Build();

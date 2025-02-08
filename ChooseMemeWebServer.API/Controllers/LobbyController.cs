@@ -1,32 +1,34 @@
-﻿using ChooseMemeWebServer.Application.Interfaces;
+﻿using AutoMapper;
+using ChooseMemeWebServer.Application.DTO;
+using ChooseMemeWebServer.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChooseMemeWebServer.API.Controllers
 {
-    public class LobbyController(ILobbyService lobbyService) : ControllerBase
+    public class LobbyController(ILobbyService lobbyService, IMapper mapper) : ControllerBase
     {
         [HttpGet("/GetLobbies")]
         public IActionResult GetLobbies()
         {
-            return Ok(lobbyService.GetLobbies());
+            return Ok(mapper.Map<List<LobbyDTO>>(lobbyService.GetLobbies()));
         }
 
         [HttpGet("/GetLobby")]
         public IActionResult GetLobby([FromQuery] string code)
         {
-            return Ok(lobbyService.GetLobby(code));
+            return Ok(mapper.Map<LobbyDTO>(lobbyService.GetLobby(code)));
         }
 
         [HttpGet("/CreateLobby")]
         public IActionResult CreateLobby()
         {
-            return Ok(lobbyService.CreateLobby());
+            return Ok(mapper.Map<LobbyDTO>(lobbyService.CreateLobby()));
         }
 
         [HttpPost("/AddBotToLobby")]
-        public IActionResult AddBotToLobby([FromQuery] string code)
+        public async Task<IActionResult> AddBotToLobby([FromQuery] string code)
         {
-            return Ok(lobbyService.AddBotToLobby(code));
+            return Ok(mapper.Map<LobbyDTO>(await lobbyService.AddBotToLobby(code)));
         }
     }
 }

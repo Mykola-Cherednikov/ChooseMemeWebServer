@@ -1,4 +1,4 @@
-﻿namespace ChooseMemeWebServer.Core.Entities
+﻿namespace ChooseMemeWebServer.Application.Models
 {
     public class Player
     {

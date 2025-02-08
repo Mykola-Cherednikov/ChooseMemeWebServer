@@ -1,6 +1,6 @@
 ﻿using ChooseMemeWebServer.Application.Common.WebSocket;
 using ChooseMemeWebServer.Application.Interfaces;
-using ChooseMemeWebServer.Core.Entities;
+using ChooseMemeWebServer.Application.Models;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
@@ -32,11 +32,11 @@ namespace ChooseMemeWebServer.Infrastructure.Extensions
 
         public static async Task SendMessageBroadcast(this IWebSocketConnectionService connectionService, Lobby lobby, WebSocketResponseMessage payload)
         {
-            await connectionService.SendMessageToServer(lobby, payload);
-            await connectionService.SendMessageBroadcastWithoutServer(lobby, payload);
+            await connectionService.SendMessageToServer(lobby.Server, payload);
+            await connectionService.SendMessageToAllPlayers(lobby, payload);
         }
 
-        public static async Task SendMessageBroadcastWithoutServer(this IWebSocketConnectionService connectionService, Lobby lobby, WebSocketResponseMessage payload)
+        public static async Task SendMessageToAllPlayers(this IWebSocketConnectionService connectionService, Lobby lobby, WebSocketResponseMessage payload)
         {
             foreach (var player in lobby.Players)
             {
@@ -52,9 +52,9 @@ namespace ChooseMemeWebServer.Infrastructure.Extensions
             }
         }
 
-        public static async Task SendMessageToServer(this IWebSocketConnectionService connectionService, Lobby lobby, WebSocketResponseMessage payload)
+        public static async Task SendMessageToServer(this IWebSocketConnectionService connectionService, Server server, WebSocketResponseMessage payload)
         {
-            if (connectionService.TryGetServerConnection(lobby, out var serverWebSocket))
+            if (connectionService.TryGetServerConnection(server, out var serverWebSocket))
             {
                 await serverWebSocket.WriteDataToWebSocket(payload);
             }

@@ -1,5 +1,5 @@
 ﻿using ChooseMemeWebServer.Application.Interfaces;
-using ChooseMemeWebServer.Core.Entities;
+using ChooseMemeWebServer.Application.Models;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.WebSockets;
 
@@ -9,7 +9,7 @@ namespace ChooseMemeWebServer.Infrastructure.Services
     {
         public static Dictionary<Player, WebSocket> onlinePlayers = new Dictionary<Player, WebSocket>();
 
-        public static Dictionary<Lobby, WebSocket> onlineServers = new Dictionary<Lobby, WebSocket>();
+        public static Dictionary<Server, WebSocket> onlineServers = new Dictionary<Server, WebSocket>();
 
         public void AddPlayerConnection(Player player, WebSocket webSocket)
         {
@@ -26,19 +26,19 @@ namespace ChooseMemeWebServer.Infrastructure.Services
             return onlinePlayers.TryGetValue(player, out webSocket);
         }
 
-        public void AddServerConnection(Lobby lobby, WebSocket webSocket)
+        public void AddServerConnection(Server server, WebSocket webSocket)
         {
-            onlineServers.Add(lobby, webSocket);
+            onlineServers.Add(server, webSocket);
         }
 
-        public void RemoveServerConnection(Lobby lobby)
+        public void RemoveServerConnection(Server server)
         {
-            onlineServers.Remove(lobby);
+            onlineServers.Remove(server);
         }
 
-        public bool TryGetServerConnection(Lobby lobby, [MaybeNullWhen(false)] out WebSocket webSocket)
+        public bool TryGetServerConnection(Server server, [MaybeNullWhen(false)] out WebSocket webSocket)
         {
-            return onlineServers.TryGetValue(lobby, out webSocket);
+            return onlineServers.TryGetValue(server, out webSocket);
         }
     }
 }

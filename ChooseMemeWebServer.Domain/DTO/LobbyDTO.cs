@@ -1,5 +1,5 @@
 ﻿using ChooseMemeWebServer.Application.Common.Mappings;
-using ChooseMemeWebServer.Core.Entities;
+using ChooseMemeWebServer.Application.Models;
 
 namespace ChooseMemeWebServer.Application.DTO
 {

@@ -1,6 +1,6 @@
 ﻿using ChooseMemeWebServer.Application.Common.WebSocket;
 using ChooseMemeWebServer.Application.Interfaces;
-using ChooseMemeWebServer.Core.Entities;
+using ChooseMemeWebServer.Application.Models;
 using ChooseMemeWebServer.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.WebSockets;
@@ -9,8 +9,8 @@ using System.Text.Json;
 namespace ChooseMemeWebServer.API.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    public class WebSocketController(IWebSocketConnectionService connectionService, IPlayerService playerService, 
-        IWebSocketCommandService commandService, ILobbyService lobbyService) : ControllerBase
+    public class WebSocketController(IWebSocketConnectionService connectionService, IPlayerService playerService,
+        IWebSocketCommandService commandService, ILobbyService lobbyService, IServerService serverService) : ControllerBase
     {
         [Route("/wsClient")]
         public async Task<IActionResult> ClientConnect(string username, string lobbyCode)
@@ -61,15 +61,19 @@ namespace ChooseMemeWebServer.API.Controllers
             {
                 using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
 
+                Server server = serverService.AddOnlineServer();
+
+                connectionService.AddServerConnection(server, webSocket);
+
                 Lobby lobby = lobbyService.CreateLobby();
 
-                connectionService.AddServerConnection(lobby, webSocket);
+                await lobbyService.AddServerToLobby(lobby, server);
 
-                await lobbyService.ServerJoinToLobby(lobby);
+                await ListenServer(webSocket, server, lobby);
 
-                await ListenServer(webSocket);
+                connectionService.RemoveServerConnection(server);
 
-                connectionService.RemoveServerConnection(lobby);
+                serverService.RemoveOnlineServer(server);
 
                 return Ok();
             }
@@ -94,7 +98,7 @@ namespace ChooseMemeWebServer.API.Controllers
                 {
                     var message = JsonSerializer.Deserialize<WebSocketRequestMessage>(receiveResult.Message);
 
-                    if(message == null)
+                    if (message == null)
                     {
                         throw new Exception("Message is null");
                     }
@@ -113,7 +117,7 @@ namespace ChooseMemeWebServer.API.Controllers
                 CancellationToken.None);
         }
 
-        private async Task ListenServer(WebSocket webSocket)
+        private async Task ListenServer(WebSocket webSocket, Server server, Lobby lobby)
         {
             while (!webSocket.CloseStatus.HasValue)
             {

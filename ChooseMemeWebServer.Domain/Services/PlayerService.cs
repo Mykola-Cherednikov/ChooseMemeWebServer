@@ -3,7 +3,7 @@ using ChooseMemeWebServer.Application.Common.WebSocket;
 using ChooseMemeWebServer.Application.DTO;
 using ChooseMemeWebServer.Application.DTO.PlayerService;
 using ChooseMemeWebServer.Application.Interfaces;
-using ChooseMemeWebServer.Core.Entities;
+using ChooseMemeWebServer.Application.Models;
 using RandomNameGeneratorLibrary;
 
 namespace ChooseMemeWebServer.Application.Services
