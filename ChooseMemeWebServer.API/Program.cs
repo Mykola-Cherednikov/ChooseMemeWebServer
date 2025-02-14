@@ -21,7 +21,7 @@ namespace ChooseMemeWebServer
             builder.Services.AddScoped<IPlayerService, PlayerService>();
             builder.Services.AddScoped<IWebSocketSenderService, WebSocketSenderService>();
             builder.Services.AddScoped<IWebSocketConnectionService, WebSocketConnectionService>();
-            builder.Services.AddScoped<IWebSocketCommandService, WebSocketCommandService>();
+            builder.Services.AddScoped<IWebSocketRequestService, WebSocketRequestService>();
             builder.Services.AddScoped<IServerService, ServerService>();
 
             builder.Services.AddAutoMapper(config =>

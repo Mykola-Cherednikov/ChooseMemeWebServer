@@ -8,7 +8,7 @@ using RandomNameGeneratorLibrary;
 
 namespace ChooseMemeWebServer.Application.Services
 {
-    public class PlayerService(IWebSocketSenderService sender, IMapper mapper) : IPlayerService
+    public class PlayerService(IWebSocketSenderService sender, IMapper mapper, ILobbyService lobbyService) : IPlayerService
     {
         private static readonly Dictionary<string, Player> onlinePlayers = new Dictionary<string, Player>();
         private static readonly Dictionary<string, Player> onlineBots = new Dictionary<string, Player>();
@@ -91,15 +91,6 @@ namespace ChooseMemeWebServer.Application.Services
             var payload = new WebSocketResponseMessage(WebSocketMessageResponseType.OnPlayerIsReady, mapper.Map<PlayerDTO>(data.Player));
             sender.SendMessageToServer(data.Lobby, payload);
             sender.SendMessageToPlayer(data.Player, payload);
-
-            if (data.Lobby.Players.All(p => p.IsReady))
-            {
-                //TODO
-            }
-            else
-            {
-
-            }
         }
     }
 }

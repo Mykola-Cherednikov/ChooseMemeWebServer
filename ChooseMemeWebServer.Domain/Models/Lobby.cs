@@ -1,4 +1,6 @@
-﻿namespace ChooseMemeWebServer.Application.Models
+﻿using ChooseMemeWebServer.Core.Entities;
+
+namespace ChooseMemeWebServer.Application.Models
 {
     public class Lobby
     {
@@ -9,5 +11,20 @@
         public Server Server { get; set; } = null!;
 
         public bool IsAllPlayersReady { get => Players.All(p => p.IsReady); }
+
+        public Preset Preset { get; set; } = null!;
+
+        public LobbyStatus Status { get; set; }
+    }
+
+    public enum LobbyStatus
+    {
+        WaitingForPlayers,
+        GameStart,
+        AskQuestion,
+        AnswerQuestion,
+        ResultsQuestion,
+        EndResult,
+        End
     }
 }

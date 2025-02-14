@@ -9,21 +9,21 @@ using System.Text.Json;
 
 namespace ChooseMemeWebServer.Infrastructure.Services
 {
-    public class WebSocketCommandService(IServiceProvider provider) : IWebSocketCommandService
+    public class WebSocketRequestService(IServiceProvider provider) : IWebSocketRequestService
     {
-        private static Dictionary<WebSocketMessageRequestType, CallInfo> _commandToCommandTypeCache = new()
+        private static Dictionary<PlayerRequestMessageType, CallInfo> _requestToCallInfoCache = new()
         {
-            { WebSocketMessageRequestType.ForceStartGame, new CallInfo(typeof(ILobbyService), "ForceStartGame", typeof(ForceStartGameDTO)) },
-            { WebSocketMessageRequestType.PlayerLeave, new CallInfo(typeof(ILobbyService), "LeaveFromLobby", typeof(LeaveFromLobbyDTO)) },
-            { WebSocketMessageRequestType.PlayerIsReady, new CallInfo(typeof(IPlayerService), "SetPlayerIsReady", typeof(SetPlayerIsReadyDTO)) }
+            { PlayerRequestMessageType.ForceStartGame, new CallInfo(typeof(ILobbyService), "ForceStartGame", typeof(ForceStartGameDTO)) },
+            { PlayerRequestMessageType.PlayerLeave, new CallInfo(typeof(ILobbyService), "LeaveFromLobby", typeof(LeaveFromLobbyDTO)) },
+            { PlayerRequestMessageType.PlayerIsReady, new CallInfo(typeof(IPlayerService), "SetPlayerIsReady", typeof(SetPlayerIsReadyDTO)) }
         };
 
-        public void Handle(WebSocketRequestMessage message, Player player, Lobby lobby)
+        public void HandlePlayerRequest(PlayerRequestMessage message, Player player, Lobby lobby)
         {
             using (var scope = provider.CreateScope())
             {
 
-                if (!_commandToCommandTypeCache.TryGetValue(message.Type, out var callInfo))
+                if (!_requestToCallInfoCache.TryGetValue(message.Type, out var callInfo))
                 {
                     return;
                 }
@@ -49,7 +49,12 @@ namespace ChooseMemeWebServer.Infrastructure.Services
             }
         }
 
-        public void ImmitateHandle(ImmitateHandleDTO data)
+        public void HandleServerRequest(PlayerRequestMessage data, Server server, Lobby lobby)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ImmitateHandlePlayerRequest(ImmitatePlayerHandleDTO data)
         {
             using (var scope = provider.CreateScope())
             {
@@ -60,8 +65,13 @@ namespace ChooseMemeWebServer.Infrastructure.Services
                     return;
                 }
 
-                Handle(data.Message, player, player.Lobby);
+                HandlePlayerRequest(data.Message, player, player.Lobby);
             }
+        }
+
+        public void ImmitateHandleServerRequest(ImmitateServerHandleDTO data)
+        {
+            throw new NotImplementedException();
         }
     }
 }

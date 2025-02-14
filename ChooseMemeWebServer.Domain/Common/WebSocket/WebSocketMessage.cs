@@ -11,10 +11,16 @@ namespace ChooseMemeWebServer.Application.Common.WebSocket
         public string MessageTypeName { get; set; } = null!;
     }
 
-    public class WebSocketRequestMessage : WebSocketMessage
+    public class PlayerRequestMessage : WebSocketMessage
     {
         [JsonIgnore]
-        public WebSocketMessageRequestType Type { get => (WebSocketMessageRequestType)Enum.Parse(typeof(WebSocketMessageRequestType), MessageTypeName); }
+        public PlayerRequestMessageType Type { get => (PlayerRequestMessageType)Enum.Parse(typeof(PlayerRequestMessageType), MessageTypeName); }
+    }
+
+    public class ServerRequestMessage : WebSocketMessage
+    {
+        [JsonIgnore]
+        public ServerRequestMessageType Type { get => (ServerRequestMessageType)Enum.Parse(typeof(ServerRequestMessageType), MessageTypeName); }
     }
 
     public class WebSocketResponseMessage : WebSocketMessage
@@ -31,11 +37,16 @@ namespace ChooseMemeWebServer.Application.Common.WebSocket
         }
     }
 
-    public enum WebSocketMessageRequestType
+    public enum PlayerRequestMessageType
     {
         PlayerLeave,
         PlayerIsReady,
         ForceStartGame
+    }
+
+    public enum ServerRequestMessageType
+    {
+        NextState
     }
 
     public enum WebSocketMessageResponseType
@@ -46,6 +57,6 @@ namespace ChooseMemeWebServer.Application.Common.WebSocket
         NewLeader,
         OnPlayerIsReady,
         StartGame,
-        OnForceStartGame
+        OnStartGame
     }
 }

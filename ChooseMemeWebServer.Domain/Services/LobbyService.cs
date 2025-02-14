@@ -112,20 +112,7 @@ namespace ChooseMemeWebServer.Application.Services
             await sender.SendMessageToPlayer(player, payload);
 
             return lobby;
-        }
-
-        // WebSocket
-        public async Task ForceStartGame(ForceStartGameDTO data)
-        {
-            if (!data.Player.IsLeader)
-            {
-                return;
-            }
-
-            var payload = new WebSocketResponseMessage(WebSocketMessageResponseType.OnForceStartGame);
-
-            await sender.SendMessageToServer(data.Player.Lobby, payload);
-        }
+        }  
 
         private string GenerateCode(int length)
         {
@@ -139,6 +126,27 @@ namespace ChooseMemeWebServer.Application.Services
             }
 
             return stringBuilder.ToString();
+        }
+
+        // WebSocket
+        public async Task StartGame(ForceStartGameDTO data)
+        {
+            if (!data.Player.IsLeader)
+            {
+                return;
+            }
+
+            var payload = new WebSocketResponseMessage(WebSocketMessageResponseType.OnStartGame);
+
+            data.Lobby.Status = LobbyStatus.GameStart;
+            await sender.SendMessageToServer(data.Player.Lobby, payload);
+            await sender.SendMessageToAllPlayers(data.Player.Lobby, payload);
+        }
+
+        // WebSocket Server
+        public async Task NextStatus()
+        {
+
         }
     }
 }
