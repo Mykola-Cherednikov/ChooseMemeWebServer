@@ -152,7 +152,7 @@ namespace ChooseMemeWebServer.API.Controllers
 
                 try
                 {
-                    var message = JsonSerializer.Deserialize<PlayerRequestMessage>(receiveResult.Message);
+                    var message = JsonSerializer.Deserialize<ServerRequestMessage>(receiveResult.Message);
 
                     if (message == null)
                     {

@@ -49,7 +49,7 @@ namespace ChooseMemeWebServer.Infrastructure.Services
             }
         }
 
-        public void HandleServerRequest(PlayerRequestMessage data, Server server, Lobby lobby)
+        public void HandleServerRequest(ServerRequestMessage data, Server server, Lobby lobby)
         {
             throw new NotImplementedException();
         }
