@@ -14,6 +14,49 @@ namespace ChooseMemeWebServer.API.Controllers
             return Ok();
         }
 
+        [HttpPost("/ImmitatePlayerStartGameRequest")]
+        public IActionResult ImitatePlayerStartGameRequest(string playerId)
+        {
+            return ImitatePlayerRequest(
+                new ImmitatePlayerHandleDTO() { 
+                    PlayerId = playerId, 
+                    Message = new PlayerRequestMessage() { 
+                        MessageTypeName = PlayerRequestMessageType.StartGame.ToString() 
+                    } 
+                }
+            );
+        }
+
+        [HttpPost("/ImmitatePlayerLeaveRequest")]
+        public IActionResult ImitatePlayerLeaveRequest(string playerId)
+        {
+            return ImitatePlayerRequest(
+                new ImmitatePlayerHandleDTO()
+                {
+                    PlayerId = playerId,
+                    Message = new PlayerRequestMessage()
+                    {
+                        MessageTypeName = PlayerRequestMessageType.PlayerLeave.ToString()
+                    }
+                }
+            );
+        }
+
+        [HttpPost("/ImmitatePlayerIsReadyRequest")]
+        public IActionResult ImitatePlayerIsReadyRequest(string playerId)
+        {
+            return ImitatePlayerRequest(
+                new ImmitatePlayerHandleDTO()
+                {
+                    PlayerId = playerId,
+                    Message = new PlayerRequestMessage()
+                    {
+                        MessageTypeName = PlayerRequestMessageType.PlayerIsReady.ToString()
+                    }
+                }
+            );
+        }
+
         [HttpPost("/ImitateServerRequest")]
         public IActionResult ImitateServerRequest([FromBody]ImmitateServerHandleDTO data)
         {

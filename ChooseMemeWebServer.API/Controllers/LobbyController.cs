@@ -19,7 +19,7 @@ namespace ChooseMemeWebServer.API.Controllers
             return Ok(mapper.Map<LobbyDTO>(lobbyService.GetLobby(code)));
         }
 
-        [HttpGet("/CreateLobby")]
+        [HttpPost("/CreateLobby")]
         public IActionResult CreateLobby()
         {
             return Ok(mapper.Map<LobbyDTO>(lobbyService.CreateLobby()));

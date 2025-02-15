@@ -11,6 +11,8 @@ namespace ChooseMemeWebServer.Application.DTO
 
         public bool IsReady { get; set; } = false!;
 
+        public bool IsLeader { get; set; } = false!;
+
         public void Mapping(AutoMapper.Profile autoMapperProfile)
         {
             autoMapperProfile.CreateMap<Player, PlayerDTO>();

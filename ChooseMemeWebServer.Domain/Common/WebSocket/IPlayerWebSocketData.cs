@@ -2,7 +2,7 @@
 
 namespace ChooseMemeWebServer.Application.Common.WebSocket
 {
-    public interface IWebSocketData
+    public interface IPlayerWebSocketData
     {
         public Lobby Lobby { get; set; }
 

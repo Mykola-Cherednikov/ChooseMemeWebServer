@@ -5,10 +5,10 @@ namespace ChooseMemeWebServer.Application.Common.WebSocket
 {
     public abstract class WebSocketMessage
     {
+        public string MessageTypeName { get; set; } = null!;
+
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string WebSocketData { get; set; } = null!;
-
-        public string MessageTypeName { get; set; } = null!;
     }
 
     public class PlayerRequestMessage : WebSocketMessage
@@ -41,22 +41,28 @@ namespace ChooseMemeWebServer.Application.Common.WebSocket
     {
         PlayerLeave,
         PlayerIsReady,
-        ForceStartGame
+        StartGame
     }
 
     public enum ServerRequestMessageType
     {
+        CloseLobby,
         NextState
     }
 
     public enum WebSocketMessageResponseType
     {
+        UserNameIsNullOrEmpty,
+        LobbyCodeIsNullOrEmpty,
+        CantFindLobby,
+        LobbyAlreadyHaveServer,
+
         OnCreateLobby,
+        OnLobbyClose,
         OnPlayerJoin,
         OnPlayerLeave,
         NewLeader,
         OnPlayerIsReady,
-        StartGame,
         OnStartGame
     }
 }

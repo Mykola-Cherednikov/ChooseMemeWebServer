@@ -4,7 +4,6 @@ using ChooseMemeWebServer.Application.Models;
 using ChooseMemeWebServer.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.WebSockets;
-using System.Numerics;
 using System.Text.Json;
 
 namespace ChooseMemeWebServer.API.Controllers
@@ -14,21 +13,23 @@ namespace ChooseMemeWebServer.API.Controllers
         IWebSocketRequestService requestService, ILobbyService lobbyService, IServerService serverService, IConfiguration configuration) : ControllerBase
     {
         [Route("/wsPlayer")]
-        public async Task<IActionResult> PlayerConnect(string username, string lobbyCode)
+        public async Task PlayerConnect(string username, string lobbyCode)
         {
             if (HttpContext.WebSockets.IsWebSocketRequest)
             {
+                using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
+
                 if (string.IsNullOrEmpty(username))
                 {
-                    return BadRequest("Username is null or empty");
+                    await webSocket.WriteDataToWebSocket(new WebSocketResponseMessage(WebSocketMessageResponseType.UserNameIsNullOrEmpty));
+                    return;
                 }
 
                 if (string.IsNullOrEmpty(lobbyCode))
                 {
-                    return BadRequest("LobbyCode is null or empty");
+                    await webSocket.WriteDataToWebSocket(new WebSocketResponseMessage(WebSocketMessageResponseType.LobbyCodeIsNullOrEmpty));
+                    return;
                 }
-
-                using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
 
                 Player player = playerService.AddOnlinePlayer(username);
 
@@ -40,18 +41,17 @@ namespace ChooseMemeWebServer.API.Controllers
                 {
                     connectionService.RemovePlayerConnection(player);
 
-                    return BadRequest("Can`t find Lobby");
+                    await webSocket.WriteDataToWebSocket(new WebSocketResponseMessage(WebSocketMessageResponseType.CantFindLobby));
+                    return;
                 }
 
                 await ListenPlayer(webSocket, player, lobby);
 
+                await lobbyService.LeaveFromLobby(lobby, player);
+
                 connectionService.RemovePlayerConnection(player);
 
-                return Ok();
-            }
-            else
-            {
-                return BadRequest("Support only WebSocket request");
+                playerService.RemoveOnlinePlayer(player);
             }
         }
 
@@ -90,7 +90,7 @@ namespace ChooseMemeWebServer.API.Controllers
         }
 
         [Route("/wsServer")]
-        public async Task<IActionResult> ServerConnect(string lobbyCode)
+        public async Task ServerConnect(string lobbyCode)
         {
             if (HttpContext.WebSockets.IsWebSocketRequest)
             {
@@ -108,12 +108,14 @@ namespace ChooseMemeWebServer.API.Controllers
 
                     if (possibleLobby == null)
                     {
-                        return BadRequest("Lobby not found");
+                        await webSocket.WriteDataToWebSocket(new WebSocketResponseMessage(WebSocketMessageResponseType.CantFindLobby));
+                        return;
                     }
 
                     if (possibleLobby.Server != null)
                     {
-                        return BadRequest($"Lobby already have server");
+                        await webSocket.WriteDataToWebSocket(new WebSocketResponseMessage(WebSocketMessageResponseType.LobbyAlreadyHaveServer));
+                        return;
                     }
 
                     lobby = possibleLobby;
@@ -127,15 +129,11 @@ namespace ChooseMemeWebServer.API.Controllers
 
                 await ListenServer(webSocket, server, lobby);
 
+                await lobbyService.CloseLobby(lobby, server);
+
                 connectionService.RemoveServerConnection(server);
 
                 serverService.RemoveOnlineServer(server);
-
-                return Ok();
-            }
-            else
-            {
-                return BadRequest("Support only WebSocket request");
             }
         }
 

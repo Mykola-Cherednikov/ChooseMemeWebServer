@@ -28,5 +28,17 @@ namespace ChooseMemeWebServer.Application.Services
         {
 
         }
+
+        public Server? GetOnlineServer(string serverId)
+        {
+            Server? resultServer = new Server();
+
+            if (onlineServers.TryGetValue(serverId, out Server? server))
+            {
+                resultServer = server;
+            }
+
+            return resultServer;
+        }
     }
 }

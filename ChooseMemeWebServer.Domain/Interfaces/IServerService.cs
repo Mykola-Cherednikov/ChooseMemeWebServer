@@ -9,5 +9,7 @@ namespace ChooseMemeWebServer.Application.Interfaces
         public void RemoveOnlineServer(Server server);
 
         public void GetOnlineServers();
+
+        public Server? GetOnlineServer(string serverId);
     }
 }

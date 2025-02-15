@@ -2,7 +2,7 @@
 
 namespace ChooseMemeWebServer.Application.DTO.LobbyService
 {
-    public class ForceStartGameDTO : BaseWebSocketData
+    public class StartGameDTO : BasePlayerWebSocketData
     {
 
     }

@@ -5,25 +5,60 @@ using ChooseMemeWebServer.Application.DTO.LobbyService;
 using ChooseMemeWebServer.Application.Interfaces;
 using ChooseMemeWebServer.Application.Models;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 
 namespace ChooseMemeWebServer.Application.Services
 {
-    public class LobbyService(IWebSocketSenderService sender, IMapper mapper, IPlayerService playerService) : ILobbyService
+    public class LobbyService(IWebSocketSenderService sender, IMapper mapper, IPlayerService playerService, IConfiguration configuration) : ILobbyService
     {
         private static readonly Dictionary<string, Lobby> activeLobbies = new Dictionary<string, Lobby>();
 
         public Lobby CreateLobby()
         {
-            Lobby lobby = new Lobby() { Code = GenerateCode(6)};
+            Lobby lobby;
+
+            if (activeLobbies.Count == 0 && bool.TryParse(configuration["IsTesting"], out bool isTesting) && isTesting)
+            {
+                lobby = new Lobby() { Code = "AAAAAA" };
+            }
+            else
+            {
+                lobby = new Lobby() { Code = GenerateCode(6) };
+            }
 
             activeLobbies.Add(lobby.Code, lobby);
 
             return lobby;
         }
 
+        // WebSocket
+        public async Task CloseLobby(Lobby lobby, Server server)
+        {
+            if (lobby.Server != server)
+            {
+                return;
+            }
+
+            foreach(var bot in lobby.Players.Where(p => p.IsBot).ToList())
+            {
+                playerService.RemoveOnlinePlayer(bot);
+                await LeaveFromLobby(lobby, bot);
+            }
+
+            var payload = new WebSocketResponseMessage(WebSocketMessageResponseType.OnLobbyClose);
+
+            await sender.SendMessageBroadcast(lobby, payload);
+
+            lobby.Server = null!;
+            server.Lobby = null!;
+            activeLobbies.Remove(lobby.Code);
+        }
+
         public async Task AddServerToLobby(Lobby lobby, Server server)
         {
             lobby.Server = server;
+
+            server.Lobby = lobby;
 
             var payload = new WebSocketResponseMessage(WebSocketMessageResponseType.OnCreateLobby, mapper.Map<LobbyDTO>(lobby));
 
@@ -82,18 +117,18 @@ namespace ChooseMemeWebServer.Application.Services
             return await JoinToLobby(code, bot);
         }
 
-        //WebSocket
-        public async Task<Lobby> LeaveFromLobby(LeaveFromLobbyDTO data)
-        {
-            var lobby = data.Player.Lobby;
-            lobby.Players.Remove(data.Player);
-            playerService.RemoveOnlinePlayer(data.Player);
 
-            var payload = new WebSocketResponseMessage(WebSocketMessageResponseType.OnPlayerLeave, mapper.Map<PlayerDTO>(data.Player));
+        //WebSocket
+        public async Task<Lobby> LeaveFromLobby(Lobby lobby, Player player)
+        {
+            player.Lobby = null!;
+            lobby.Players.Remove(player);
+
+            var payload = new WebSocketResponseMessage(WebSocketMessageResponseType.OnPlayerLeave, mapper.Map<PlayerDTO>(player));
 
             await sender.SendMessageToServer(lobby, payload);
 
-            if (data.Player.IsLeader && lobby.Players.Count > 0)
+            if (player.IsLeader && lobby.Players.Count > 0)
             {
                 var newLeader = lobby.Players[0];
                 await SetLeader(newLeader, lobby);
@@ -129,7 +164,7 @@ namespace ChooseMemeWebServer.Application.Services
         }
 
         // WebSocket
-        public async Task StartGame(ForceStartGameDTO data)
+        public async Task StartGame(StartGameDTO data)
         {
             if (!data.Player.IsLeader)
             {

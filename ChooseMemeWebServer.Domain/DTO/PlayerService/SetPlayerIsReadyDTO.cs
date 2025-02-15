@@ -2,7 +2,7 @@
 
 namespace ChooseMemeWebServer.Application.DTO.PlayerService
 {
-    public class SetPlayerIsReadyDTO : BaseWebSocketData
+    public class SetPlayerIsReadyDTO : BasePlayerWebSocketData
     {
     }
 }

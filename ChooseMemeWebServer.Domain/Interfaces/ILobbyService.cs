@@ -12,14 +12,16 @@ namespace ChooseMemeWebServer.Application.Interfaces
 
         public Lobby CreateLobby();
 
+        public Task CloseLobby(Lobby lobby, Server server);
+
         public Task AddServerToLobby(Lobby lobby, Server server);
 
         public Task<Lobby?> AddPlayerToLobby(string code, Player player);
 
         public Task<Lobby?> AddBotToLobby(string code);
 
-        public Task<Lobby> LeaveFromLobby(LeaveFromLobbyDTO data);
+        public Task<Lobby> LeaveFromLobby(Lobby lobby, Player player);
 
-        public Task StartGame(ForceStartGameDTO data);
+        public Task StartGame(StartGameDTO data);
     }
 }

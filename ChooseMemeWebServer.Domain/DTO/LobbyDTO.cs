@@ -9,6 +9,8 @@ namespace ChooseMemeWebServer.Application.DTO
 
         public List<PlayerDTO> Players { get; set; } = null!;
 
+        public ServerDTO Server { get; set; } = null!;
+
         public void Mapping(AutoMapper.Profile autoMapperProfile)
         {
             autoMapperProfile.CreateMap<Lobby, LobbyDTO>();
