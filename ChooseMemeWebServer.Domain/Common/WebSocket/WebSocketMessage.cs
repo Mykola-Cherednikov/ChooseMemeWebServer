@@ -47,7 +47,7 @@ namespace ChooseMemeWebServer.Application.Common.WebSocket
     public enum ServerRequestMessageType
     {
         CloseLobby,
-        NextState
+        NextStatus
     }
 
     public enum WebSocketMessageResponseType

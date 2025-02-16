@@ -6,12 +6,13 @@ using ChooseMemeWebServer.Application.Interfaces;
 using ChooseMemeWebServer.Application.Models;
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using System.Collections.Concurrent;
 
 namespace ChooseMemeWebServer.Application.Services
 {
     public class LobbyService(IWebSocketSenderService sender, IMapper mapper, IPlayerService playerService, IConfiguration configuration) : ILobbyService
     {
-        private static readonly Dictionary<string, Lobby> activeLobbies = new Dictionary<string, Lobby>();
+        private static readonly ConcurrentDictionary<string, Lobby> activeLobbies = new ConcurrentDictionary<string, Lobby>();
 
         public Lobby CreateLobby()
         {
@@ -26,7 +27,7 @@ namespace ChooseMemeWebServer.Application.Services
                 lobby = new Lobby() { Code = GenerateCode(6) };
             }
 
-            activeLobbies.Add(lobby.Code, lobby);
+            activeLobbies.TryAdd(lobby.Code, lobby);
 
             return lobby;
         }
@@ -51,7 +52,7 @@ namespace ChooseMemeWebServer.Application.Services
 
             lobby.Server = null!;
             server.Lobby = null!;
-            activeLobbies.Remove(lobby.Code);
+            activeLobbies.TryRemove(lobby.Code, out _);
         }
 
         public async Task AddServerToLobby(Lobby lobby, Server server)
@@ -179,7 +180,7 @@ namespace ChooseMemeWebServer.Application.Services
         }
 
         // WebSocket Server
-        public async Task NextStatus()
+        public void NextStatus(NextStatusDTO data)
         {
 
         }

@@ -20,7 +20,7 @@ namespace ChooseMemeWebServer.Infrastructure.Services
 
         private static Dictionary<ServerRequestMessageType, CallInfo> _serverRequestToCallInfoCache = new()
         {
-
+            { ServerRequestMessageType.NextStatus, new CallInfo(typeof(ILobbyService), "NextStatus", typeof(NextStatusDTO)) }
         };
 
         public void HandlePlayerRequest(PlayerRequestMessage message, Player player, Lobby lobby)
