@@ -27,6 +27,16 @@ namespace ChooseMemeWebServer.Application.Services
                 lobby = new Lobby() { Code = GenerateCode(6) };
             }
 
+            for (int i = 0; i < 8; i++)
+            {
+                lobby.StatusQueue.Enqueue(LobbyStatus.AskQuestion);
+                lobby.StatusQueue.Enqueue(LobbyStatus.AnswerQuestion);
+                lobby.StatusQueue.Enqueue(LobbyStatus.QuestionResults);
+            }
+
+            lobby.StatusQueue.Enqueue(LobbyStatus.EndResult);
+            lobby.StatusQueue.Enqueue(LobbyStatus.End);
+
             activeLobbies.TryAdd(lobby.Code, lobby);
 
             return lobby;
@@ -181,6 +191,31 @@ namespace ChooseMemeWebServer.Application.Services
 
         // WebSocket Server
         public void NextStatus(NextStatusDTO data)
+        {
+            var status = data.Lobby.StatusQueue.Dequeue().ToString();
+
+            var instance = this;
+            var method = instance.GetType().GetMethod(status);
+
+            if (method == null)
+            {
+                return;
+            }
+
+            method.Invoke(instance, [data]);
+        }
+
+        private void AskQuestion(NextStatusDTO data)
+        {
+
+        }
+
+        private void AnswerQuestion(NextStatusDTO data)
+        {
+
+        }
+
+        private void ResultsQuestion(NextStatusDTO data)
         {
 
         }

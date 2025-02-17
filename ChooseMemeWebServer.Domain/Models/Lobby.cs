@@ -15,6 +15,8 @@ namespace ChooseMemeWebServer.Application.Models
         public Preset Preset { get; set; } = null!;
 
         public LobbyStatus Status { get; set; }
+
+        public Queue<LobbyStatus> StatusQueue { get; set; } = new Queue<LobbyStatus>();
     }
 
     public enum LobbyStatus
@@ -23,7 +25,7 @@ namespace ChooseMemeWebServer.Application.Models
         GameStart,
         AskQuestion,
         AnswerQuestion,
-        ResultsQuestion,
+        QuestionResults,
         EndResult,
         End
     }

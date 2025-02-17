@@ -1,13 +1,14 @@
-﻿namespace ChooseMemeWebServer.Core.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ChooseMemeWebServer.Core.Entities
 {
     public class Media
     {
+        [Key]
         public string Id { get; set; } = string.Empty;
 
-        public string Name { get; set; } = string.Empty;
+        public string FileName { get; set; } = string.Empty;
 
-        public string Format { get; set; } = string.Empty;
-
-        public string Path { get; set; } = string.Empty;
+        public Preset Preset { get; set; } = null!;
     }
 }

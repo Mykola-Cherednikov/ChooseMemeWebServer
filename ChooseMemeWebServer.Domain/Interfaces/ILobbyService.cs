@@ -23,5 +23,7 @@ namespace ChooseMemeWebServer.Application.Interfaces
         public Task<Lobby> LeaveFromLobby(Lobby lobby, Player player);
 
         public Task StartGame(StartGameDTO data);
+
+        public void NextStatus(NextStatusDTO data);
     }
 }
