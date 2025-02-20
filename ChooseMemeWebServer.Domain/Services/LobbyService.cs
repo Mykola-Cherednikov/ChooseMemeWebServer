@@ -110,7 +110,7 @@ namespace ChooseMemeWebServer.Application.Services
 
             if (leader == null)
             {
-                await SetLeader(player, lobby);
+                await playerService.SetLeader(player, lobby);
             }
 
             return lobby;
@@ -142,23 +142,11 @@ namespace ChooseMemeWebServer.Application.Services
             if (player.IsLeader && lobby.Players.Count > 0)
             {
                 var newLeader = lobby.Players[0];
-                await SetLeader(newLeader, lobby);
+                await playerService.SetLeader(newLeader, lobby);
             }
 
             return lobby;
         }
-
-        public async Task<Lobby> SetLeader(Player player, Lobby lobby)
-        {
-            player.IsLeader = true;
-
-            var payload = new WebSocketResponseMessage(WebSocketMessageResponseType.NewLeader, mapper.Map<PlayerDTO>(player));
-
-            await sender.SendMessageToServer(lobby, payload);
-            await sender.SendMessageToPlayer(player, payload);
-
-            return lobby;
-        }  
 
         private string GenerateCode(int length)
         {

@@ -18,5 +18,7 @@ namespace ChooseMemeWebServer.Application.Interfaces
         public Player? GetOnlinePlayer(string playerId);
 
         public void SetPlayerIsReady(SetPlayerIsReadyDTO data);
+
+        public Task SetLeader(Player player, Lobby lobby);
     }
 }

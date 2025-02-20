@@ -45,7 +45,7 @@ namespace ChooseMemeWebServer.Application.Services
 
         public Player? GetOnlinePlayer(string playerId)
         {
-            Player? resultPlayer = new Player();
+            Player? resultPlayer = null!;
 
             if (onlinePlayers.TryGetValue(playerId, out Player? player))
             {
@@ -96,6 +96,16 @@ namespace ChooseMemeWebServer.Application.Services
             var payload = new WebSocketResponseMessage(WebSocketMessageResponseType.OnPlayerIsReady, mapper.Map<PlayerDTO>(data.Player));
             sender.SendMessageToServer(data.Lobby, payload);
             sender.SendMessageToPlayer(data.Player, payload);
+        }
+
+        public async Task SetLeader(Player player, Lobby lobby)
+        {
+            player.IsLeader = true;
+
+            var payload = new WebSocketResponseMessage(WebSocketMessageResponseType.NewLeader, mapper.Map<PlayerDTO>(player));
+
+            await sender.SendMessageToServer(lobby, payload);
+            await sender.SendMessageToPlayer(player, payload);
         }
     }
 }
