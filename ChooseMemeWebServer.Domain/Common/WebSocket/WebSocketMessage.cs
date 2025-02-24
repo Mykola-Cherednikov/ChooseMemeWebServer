@@ -63,6 +63,8 @@ namespace ChooseMemeWebServer.Application.Common.WebSocket
         OnPlayerLeave,
         NewLeader,
         OnPlayerIsReady,
-        OnStartGame
+        OnStartGame,
+
+        AskQuestion
     }
 }

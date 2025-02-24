@@ -23,7 +23,7 @@ namespace ChooseMemeWebServer.Infrastructure.Services
             { ServerRequestMessageType.NextStatus, new CallInfo(typeof(ILobbyService), "NextStatus", typeof(NextStatusDTO)) }
         };
 
-        public void HandlePlayerRequest(PlayerRequestMessage message, Player player, Lobby lobby)
+        public async Task HandlePlayerRequest(PlayerRequestMessage message, Player player, Lobby lobby)
         {
             using (var scope = provider.CreateScope())
             {
@@ -50,11 +50,16 @@ namespace ChooseMemeWebServer.Infrastructure.Services
                 data.Player = player;
                 data.Lobby = lobby;
 
-                callInfo.Method.Invoke(classInstance, [data]);
+                var result = callInfo.Method.Invoke(classInstance, [data]);
+
+                if (result is Task task)
+                {
+                    await task;
+                }
             }
         }
 
-        public void HandleServerRequest(ServerRequestMessage message, Server server, Lobby lobby)
+        public async Task HandleServerRequest(ServerRequestMessage message, Server server, Lobby lobby)
         {
             using (var scope = provider.CreateScope())
             {
@@ -80,11 +85,16 @@ namespace ChooseMemeWebServer.Infrastructure.Services
                 data.Server = server;
                 data.Lobby = lobby;
 
-                callInfo.Method.Invoke(classInstance, [data]);
+                var result = callInfo.Method.Invoke(classInstance, [data]);
+
+                if (result is Task task)
+                {
+                    await task;
+                }
             }
         }
 
-        public void ImmitateHandlePlayerRequest(ImmitatePlayerHandleDTO data)
+        public async Task ImmitateHandlePlayerRequest(ImmitatePlayerHandleDTO data)
         {
             using (var scope = provider.CreateScope())
             {
@@ -95,11 +105,11 @@ namespace ChooseMemeWebServer.Infrastructure.Services
                     return;
                 }
 
-                HandlePlayerRequest(data.Message, player, player.Lobby);
+                await HandlePlayerRequest(data.Message, player, player.Lobby);
             }
         }
 
-        public void ImmitateHandleServerRequest(ImmitateServerHandleDTO data)
+        public async Task ImmitateHandleServerRequest(ImmitateServerHandleDTO data)
         {
             using (var scope = provider.CreateScope())
             {
@@ -110,7 +120,7 @@ namespace ChooseMemeWebServer.Infrastructure.Services
                     return;
                 }
 
-                HandleServerRequest(data.Message, server, server.Lobby);
+                await HandleServerRequest(data.Message, server, server.Lobby);
             }
         }
     }

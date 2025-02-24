@@ -24,6 +24,6 @@ namespace ChooseMemeWebServer.Application.Interfaces
 
         public Task StartGame(StartGameDTO data);
 
-        public void NextStatus(NextStatusDTO data);
+        public Task NextStatus(NextStatusDTO data);
     }
 }

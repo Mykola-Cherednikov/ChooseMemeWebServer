@@ -18,9 +18,9 @@ namespace ChooseMemeWebServer.Application.Models
 
         public Preset Preset { get; set; } = null!;
 
-        public List<Media> UsedMedia { get; set; } = new();
+        public List<Media> Media { get; set; } = new();
 
-        public List<Question> UsedQuestions { get; set; } = new();
+        public List<Question> Questions { get; set; } = new();
     }
 
     public enum LobbyStatus

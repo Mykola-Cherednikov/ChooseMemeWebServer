@@ -3,7 +3,6 @@ using ChooseMemeWebServer.Core;
 using ChooseMemeWebServer.Core.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ChooseMemeWebServer.Application.Services
 {
@@ -44,7 +43,7 @@ namespace ChooseMemeWebServer.Application.Services
                 Preset = preset
             };
 
-            using(var savedFile = new FileStream(filePath, FileMode.Create))
+            using (var savedFile = new FileStream(filePath, FileMode.Create))
             {
                 await file.CopyToAsync(savedFile);
             }
@@ -60,7 +59,7 @@ namespace ChooseMemeWebServer.Application.Services
         {
             var media = await context.Medias.Include(m => m.Preset).FirstOrDefaultAsync(m => m.Id == id);
 
-            if(media == null)
+            if (media == null)
             {
                 throw new Exception();
             }

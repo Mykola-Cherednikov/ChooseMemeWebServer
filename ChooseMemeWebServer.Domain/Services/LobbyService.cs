@@ -7,6 +7,7 @@ using ChooseMemeWebServer.Application.Models;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Concurrent;
+using System.Dynamic;
 
 namespace ChooseMemeWebServer.Application.Services
 {
@@ -178,7 +179,7 @@ namespace ChooseMemeWebServer.Application.Services
         }
 
         // WebSocket Server
-        public void NextStatus(NextStatusDTO data)
+        public async Task NextStatus(NextStatusDTO data)
         {
             var status = data.Lobby.StatusQueue.Dequeue().ToString();
 
@@ -190,12 +191,21 @@ namespace ChooseMemeWebServer.Application.Services
                 return;
             }
 
-            method.Invoke(instance, [data]);
+            var result = method.Invoke(instance, [data]);
+
+            if (result is Task task)
+            {
+                await task;
+            }
         }
 
-        private void AskQuestion(NextStatusDTO data)
+        private async Task AskQuestion(NextStatusDTO data)
         {
+            var payload = new WebSocketResponseMessage(WebSocketMessageResponseType.AskQuestion);
 
+            data.Lobby.Status = LobbyStatus.AskQuestion;
+            await sender.SendMessageToServer(data.Lobby, payload);
+            await sender.SendMessageToAllPlayers(data.Lobby, payload);
         }
 
         private void AnswerQuestion(NextStatusDTO data)

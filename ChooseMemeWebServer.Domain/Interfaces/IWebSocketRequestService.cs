@@ -6,12 +6,12 @@ namespace ChooseMemeWebServer.Application.Interfaces
 {
     public interface IWebSocketRequestService
     {
-        public void HandlePlayerRequest(PlayerRequestMessage data, Player player, Lobby lobby);
+        public Task HandlePlayerRequest(PlayerRequestMessage data, Player player, Lobby lobby);
 
-        public void ImmitateHandlePlayerRequest(ImmitatePlayerHandleDTO data);
+        public Task ImmitateHandlePlayerRequest(ImmitatePlayerHandleDTO data);
 
-        public void HandleServerRequest(ServerRequestMessage data, Server player, Lobby lobby);
+        public Task HandleServerRequest(ServerRequestMessage data, Server player, Lobby lobby);
 
-        public void ImmitateHandleServerRequest(ImmitateServerHandleDTO data);
+        public Task ImmitateHandleServerRequest(ImmitateServerHandleDTO data);
     }
 }
