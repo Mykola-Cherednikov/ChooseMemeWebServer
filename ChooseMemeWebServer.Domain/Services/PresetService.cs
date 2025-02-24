@@ -24,7 +24,7 @@ namespace ChooseMemeWebServer.Application.Services
 
         public async Task<Preset> GetPreset(string id)
         {
-            var preset = await context.Presets.FirstOrDefaultAsync(p => p.Id == id);
+            var preset = await context.Presets.Include(p => p.Media).Include(p => p.Questions).AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
 
             if (preset == null)
             {

@@ -8,14 +8,16 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Concurrent;
 using System.Dynamic;
+using ChooseMemeWebServer.Core.Entities;
 
 namespace ChooseMemeWebServer.Application.Services
 {
-    public class LobbyService(IWebSocketSenderService sender, IMapper mapper, IPlayerService playerService, IConfiguration configuration) : ILobbyService
+    public class LobbyService(IWebSocketSenderService sender, IMapper mapper, 
+        IPlayerService playerService, IConfiguration configuration, IHelperService helperService, IPresetService presetService) : ILobbyService
     {
         private static readonly ConcurrentDictionary<string, Lobby> activeLobbies = new ConcurrentDictionary<string, Lobby>();
 
-        public Lobby CreateLobby()
+        public async Task<Lobby> CreateLobby(string presetId)
         {
             Lobby lobby;
 
@@ -39,6 +41,14 @@ namespace ChooseMemeWebServer.Application.Services
             lobby.StatusQueue.Enqueue(LobbyStatus.End);
 
             activeLobbies.TryAdd(lobby.Code, lobby);
+
+            var preset = await presetService.GetPreset(presetId);
+
+            helperService.Shuffle(preset.Media);
+            helperService.Shuffle(preset.Questions);
+
+            lobby.Media = new Queue<Media>(preset.Media);
+            lobby.Questions = new Queue<Question>(preset.Questions);
 
             return lobby;
         }
@@ -201,11 +211,12 @@ namespace ChooseMemeWebServer.Application.Services
 
         private async Task AskQuestion(NextStatusDTO data)
         {
-            var payload = new WebSocketResponseMessage(WebSocketMessageResponseType.AskQuestion);
+            var question = data.Lobby.Questions.Dequeue();
+
+            var payload = new WebSocketResponseMessage(WebSocketMessageResponseType.AskQuestion, mapper.Map<QuestionDTO>(question));
 
             data.Lobby.Status = LobbyStatus.AskQuestion;
             await sender.SendMessageToServer(data.Lobby, payload);
-            await sender.SendMessageToAllPlayers(data.Lobby, payload);
         }
 
         private void AnswerQuestion(NextStatusDTO data)

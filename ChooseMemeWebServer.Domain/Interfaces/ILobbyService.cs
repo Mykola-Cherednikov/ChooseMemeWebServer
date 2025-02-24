@@ -10,7 +10,7 @@ namespace ChooseMemeWebServer.Application.Interfaces
 
         public List<Lobby> GetLobbies();
 
-        public Lobby CreateLobby();
+        public Task<Lobby> CreateLobby(string presetId);
 
         public Task CloseLobby(Lobby lobby, Server server);
 
