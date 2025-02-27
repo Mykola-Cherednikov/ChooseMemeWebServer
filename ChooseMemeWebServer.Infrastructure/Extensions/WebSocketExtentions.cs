@@ -46,18 +46,22 @@ namespace ChooseMemeWebServer.Infrastructure.Extensions
 
         public static async Task SendMessageToPlayer(this IWebSocketConnectionService connectionService, Player player, WebSocketResponseMessage payload)
         {
-            if (connectionService.TryGetPlayerConnection(player, out var playerWebSocket) && playerWebSocket.State != WebSocketState.Closed)
+            if (!connectionService.TryGetPlayerConnection(player, out var playerWebSocket) || playerWebSocket.State == WebSocketState.Closed)
             {
-                await playerWebSocket.WriteDataToWebSocket(payload);
+                return;
             }
+
+            await playerWebSocket.WriteDataToWebSocket(payload);
         }
 
         public static async Task SendMessageToServer(this IWebSocketConnectionService connectionService, Server server, WebSocketResponseMessage payload)
         {
-            if (connectionService.TryGetServerConnection(server, out var serverWebSocket) && serverWebSocket.State != WebSocketState.Closed)
+            if (!connectionService.TryGetServerConnection(server, out var serverWebSocket) || serverWebSocket.State == WebSocketState.Closed)
             {
-                await serverWebSocket.WriteDataToWebSocket(payload);
+                return;
             }
+
+            await serverWebSocket.WriteDataToWebSocket(payload);
         }
     }
 }

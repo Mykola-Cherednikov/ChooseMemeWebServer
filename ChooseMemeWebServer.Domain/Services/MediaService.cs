@@ -12,12 +12,12 @@ namespace ChooseMemeWebServer.Application.Services
         {
             if (!dataService.GetAllowedFormats().Contains(Path.GetExtension(file.FileName)))
             {
-                throw new Exception();
+                return null;
             }
 
-            if (file.Length / 1_048_576 > 10)
+            if (file.Length / 1_048_576 > 10) // Move to config
             {
-                throw new Exception();
+                return null;
             }
 
             var fileName = file.FileName.Substring(0, Math.Min(40, file.FileName.Length));
@@ -26,14 +26,14 @@ namespace ChooseMemeWebServer.Application.Services
 
             if (Path.Exists(filePath))
             {
-                throw new Exception();
+                return null;
             }
 
             var preset = await context.Presets.FirstOrDefaultAsync(p => p.Id == presetId);
 
             if (preset == null)
             {
-                throw new Exception();
+                return null;
             }
 
             var media = new Media()
@@ -61,7 +61,7 @@ namespace ChooseMemeWebServer.Application.Services
 
             if (media == null)
             {
-                throw new Exception();
+                return;
             }
 
             File.Delete(Path.Combine(dataService.GetPresetFolderPath(), media.Preset.Id, media.FileName));

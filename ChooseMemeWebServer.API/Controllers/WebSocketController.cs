@@ -72,7 +72,7 @@ namespace ChooseMemeWebServer.API.Controllers
 
                     if (message == null)
                     {
-                        throw new Exception("Message is null");
+                        throw new Exception("Message is null"); // Rewrite exeption type here
                     }
 
                     await requestService.HandlePlayerRequest(message, player, lobby);

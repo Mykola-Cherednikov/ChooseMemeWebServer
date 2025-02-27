@@ -1,20 +1,18 @@
 ﻿using AutoMapper;
 using ChooseMemeWebServer.Application.Common.WebSocket;
 using ChooseMemeWebServer.Application.DTO;
+using ChooseMemeWebServer.Application.DTO.LobbyService.Request;
 using ChooseMemeWebServer.Application.Interfaces;
 using ChooseMemeWebServer.Application.Models;
-using System.Text;
+using ChooseMemeWebServer.Core.Entities;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Concurrent;
-using System.Dynamic;
-using ChooseMemeWebServer.Core.Entities;
-using System.Numerics;
-using ChooseMemeWebServer.Application.DTO.LobbyService.Request;
 using System.Reflection;
+using System.Text;
 
 namespace ChooseMemeWebServer.Application.Services
 {
-    public class LobbyService(IWebSocketSenderService sender, IMapper mapper, 
+    public class LobbyService(IWebSocketSenderService sender, IMapper mapper,
         IPlayerService playerService, IConfiguration configuration, IHelperService helperService, IPresetService presetService) : ILobbyService
     {
         private static readonly ConcurrentDictionary<string, Lobby> activeLobbies = new ConcurrentDictionary<string, Lobby>();
@@ -64,7 +62,7 @@ namespace ChooseMemeWebServer.Application.Services
                 return;
             }
 
-            foreach(var bot in lobby.Players.Where(p => p.IsBot).ToList())
+            foreach (var bot in lobby.Players.Where(p => p.IsBot).ToList())
             {
                 playerService.RemoveOnlinePlayer(bot);
                 await LeaveFromLobby(lobby, bot);
@@ -95,17 +93,21 @@ namespace ChooseMemeWebServer.Application.Services
             return activeLobbies.Values.ToList();
         }
 
-        public Lobby? GetLobby(string code)
+        public Lobby GetLobby(string code)
         {
-            activeLobbies.TryGetValue(code, out var lobby);
+            if(!activeLobbies.TryGetValue(code, out var lobby))
+            {
+                return null; // Exeption here
+            }
+
             return lobby;
         }
 
-        private async Task<Lobby?> JoinToLobby(string code, Player player)
+        private async Task<Lobby> JoinToLobby(string code, Player player)
         {
             if (!activeLobbies.TryGetValue(code, out var lobby))
             {
-                return null;
+                return null; // Exeption here
             }
 
             lobby.Players.Add(player);
@@ -130,12 +132,12 @@ namespace ChooseMemeWebServer.Application.Services
             return lobby;
         }
 
-        public async Task<Lobby?> AddPlayerToLobby(string code, Player player)
+        public async Task<Lobby> AddPlayerToLobby(string code, Player player)
         {
             return await JoinToLobby(code, player);
         }
 
-        public async Task<Lobby?> AddBotToLobby(string code)
+        public async Task<Lobby> AddBotToLobby(string code)
         {
             var bot = playerService.AddBot();
 
@@ -226,7 +228,7 @@ namespace ChooseMemeWebServer.Application.Services
         {
             foreach (var player in data.Lobby.Players)
             {
-                while(player.Media.Count < 4 && data.Lobby.Media.Count != 0)
+                while (player.Media.Count < 4 && data.Lobby.Media.Count != 0)
                 {
                     player.Media.Add(data.Lobby.Media.Dequeue());
                 }

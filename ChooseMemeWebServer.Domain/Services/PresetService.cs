@@ -28,7 +28,7 @@ namespace ChooseMemeWebServer.Application.Services
 
             if (preset == null)
             {
-                throw new Exception();
+                return null;
             }
 
             return preset;
