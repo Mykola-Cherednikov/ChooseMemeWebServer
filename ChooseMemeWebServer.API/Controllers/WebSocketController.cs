@@ -75,7 +75,7 @@ namespace ChooseMemeWebServer.API.Controllers
                         throw new Exception("Message is null");
                     }
 
-                    requestService.HandlePlayerRequest(message, player, lobby);
+                    await requestService.HandlePlayerRequest(message, player, lobby);
                 }
                 catch (Exception ex)
                 {
@@ -90,7 +90,7 @@ namespace ChooseMemeWebServer.API.Controllers
         }
 
         [Route("/wsServer")]
-        public async Task ServerConnect(string lobbyCode)
+        public async Task ServerConnect(string presetId, string lobbyCode)
         {
             if (HttpContext.WebSockets.IsWebSocketRequest)
             {
@@ -122,7 +122,7 @@ namespace ChooseMemeWebServer.API.Controllers
                 }
                 else
                 {
-                    lobby = lobbyService.CreateLobby();
+                    lobby = await lobbyService.CreateLobby(presetId);
                 }
 
                 await lobbyService.AddServerToLobby(lobby, server);
@@ -157,7 +157,7 @@ namespace ChooseMemeWebServer.API.Controllers
                         throw new Exception("Message is null");
                     }
 
-                    requestService.HandleServerRequest(message, server, lobby);
+                    await requestService.HandleServerRequest(message, server, lobby);
                 }
                 catch (Exception ex)
                 {

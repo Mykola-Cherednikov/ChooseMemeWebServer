@@ -20,9 +20,9 @@ namespace ChooseMemeWebServer.API.Controllers
         }
 
         [HttpPost("/CreateLobby")]
-        public IActionResult CreateLobby()
+        public async Task<IActionResult> CreateLobby(string presetId)
         {
-            return Ok(mapper.Map<LobbyDTO>(lobbyService.CreateLobby()));
+            return Ok(mapper.Map<LobbyDTO>(await lobbyService.CreateLobby(presetId)));
         }
 
         [HttpPost("/AddBotToLobby")]

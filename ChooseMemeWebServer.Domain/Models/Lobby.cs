@@ -16,6 +16,8 @@ namespace ChooseMemeWebServer.Application.Models
 
         public Queue<LobbyStatus> StatusQueue { get; set; } = new();
 
+        public string PresetId { get; set; } = string.Empty;
+
         public Queue<Media> Media { get; set; } = new();
 
         public Queue<Question> Questions { get; set; } = new();

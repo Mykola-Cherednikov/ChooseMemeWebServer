@@ -3,6 +3,7 @@ using ChooseMemeWebServer.Application.Common.Mappings;
 using ChooseMemeWebServer.Application.Interfaces;
 using ChooseMemeWebServer.Application.Services;
 using ChooseMemeWebServer.Infrastructure.Services;
+using ChooseMemeWebServer.Infrastructure.TestServices;
 using System.Reflection;
 
 namespace ChooseMemeWebServer
@@ -23,6 +24,9 @@ namespace ChooseMemeWebServer
             builder.Services.AddScoped<IWebSocketConnectionService, WebSocketConnectionService>();
             builder.Services.AddScoped<IWebSocketRequestService, WebSocketRequestService>();
             builder.Services.AddScoped<IServerService, ServerService>();
+            builder.Services.AddScoped<IHelperService, HelperService>();
+            //builder.Services.AddScoped<IMediaService, MediaService>();
+            builder.Services.AddScoped<IPresetService, PresetTestService>();
 
             builder.Services.AddAutoMapper(config =>
             {

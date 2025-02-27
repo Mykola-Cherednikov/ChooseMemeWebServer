@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace ChooseMemeWebServer.Application.Common.WebSocket
 {
-    public class BaseServerWebSocketData : IServerWebSocketData
+    public interface IServerWebSocketRequestData
     {
-        public Lobby Lobby { get; set; } = null!;
+        public Lobby Lobby { get; set; }
 
-        public Server Server { get; set; } = null!;
+        public Server Server { get; set; }
     }
 }

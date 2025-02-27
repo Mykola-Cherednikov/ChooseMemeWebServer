@@ -9,8 +9,10 @@ namespace ChooseMemeWebServer.API
             using (var scope = webApplication.Services.CreateScope())
             {
                 var lobbyService = scope.ServiceProvider.GetRequiredService<ILobbyService>();
+                var presetService = scope.ServiceProvider.GetRequiredService<IPresetService>();
 
-                var lobby = lobbyService.CreateLobby();
+                var preset = await presetService.CreatePreset("First");
+                var lobby = await lobbyService.CreateLobby(preset.Id);
                 await lobbyService.AddBotToLobby(lobby.Code);
                 await lobbyService.AddBotToLobby(lobby.Code);
                 await lobbyService.AddBotToLobby(lobby.Code);

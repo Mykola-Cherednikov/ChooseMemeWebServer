@@ -1,5 +1,5 @@
 ﻿using ChooseMemeWebServer.Application.DTO;
-using ChooseMemeWebServer.Application.DTO.LobbyService;
+using ChooseMemeWebServer.Application.DTO.LobbyService.Request;
 using ChooseMemeWebServer.Application.Models;
 
 namespace ChooseMemeWebServer.Application.Interfaces
@@ -22,8 +22,8 @@ namespace ChooseMemeWebServer.Application.Interfaces
 
         public Task<Lobby> LeaveFromLobby(Lobby lobby, Player player);
 
-        public Task StartGame(StartGameDTO data);
+        public Task StartGame(StartGameRequestDTO data);
 
-        public Task NextStatus(NextStatusDTO data);
+        public Task NextStatus(NextStatusRequestDTO data);
     }
 }

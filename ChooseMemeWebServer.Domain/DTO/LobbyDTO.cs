@@ -11,9 +11,17 @@ namespace ChooseMemeWebServer.Application.DTO
 
         public ServerDTO Server { get; set; } = null!;
 
+        public string Status { get; set; } = string.Empty;
+
+        public List<string> StatusQueue { get; set; } = new();
+
+        public string PresetId { get; set; } = string.Empty;
+
         public void Mapping(AutoMapper.Profile autoMapperProfile)
         {
-            autoMapperProfile.CreateMap<Lobby, LobbyDTO>();
+            autoMapperProfile.CreateMap<Lobby, LobbyDTO>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
+                .ForMember(dest => dest.StatusQueue, opt => opt.MapFrom(src => src.StatusQueue.Select(sq => sq.ToString()).ToList()));
         }
     }
 }

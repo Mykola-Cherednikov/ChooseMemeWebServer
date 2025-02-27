@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using ChooseMemeWebServer.Application.Common.WebSocket;
 using ChooseMemeWebServer.Application.DTO;
-using ChooseMemeWebServer.Application.DTO.PlayerService;
+using ChooseMemeWebServer.Application.DTO.PlayerService.Request;
+using ChooseMemeWebServer.Application.DTO.PlayerService.Response;
 using ChooseMemeWebServer.Application.Interfaces;
 using ChooseMemeWebServer.Application.Models;
 using RandomNameGeneratorLibrary;
@@ -84,9 +85,9 @@ namespace ChooseMemeWebServer.Application.Services
         }
 
         //WebSocket
-        public async Task SetPlayerIsReady(SetPlayerIsReadyDTO data)
+        public async Task SetPlayerIsReady(SetPlayerIsReadyRequestDTO data)
         {
-            if (data.Player.IsReady)
+            if (data.Player.IsReady || data.Lobby.Status != LobbyStatus.WaitingForPlayers)
             {
                 return;
             }
@@ -106,6 +107,24 @@ namespace ChooseMemeWebServer.Application.Services
 
             await sender.SendMessageToServer(lobby, payload);
             await sender.SendMessageToPlayer(player, payload);
+        }
+
+        public async Task ChooseMedia(ChooseMediaRequestDTO data)
+        {
+            var chosenMedia = data.Player.Media.FirstOrDefault(m => m.Id == data.MediaId);
+
+            if (chosenMedia == null)
+            {
+                return;
+            }
+
+            data.Player.IsReady = true;
+            data.Player.ChosenMedia = chosenMedia;
+
+            var payload = new WebSocketResponseMessage(WebSocketMessageResponseType.OnChooseMedia, new ChooseMediaResponseDTO() { PlayerId = data.Player.Id, MediaId = data.Player.ChosenMedia.Id });
+
+            await sender.SendMessageToServer(data.Lobby, payload);
+            await sender.SendMessageToPlayer(data.Player, payload);
         }
     }
 }

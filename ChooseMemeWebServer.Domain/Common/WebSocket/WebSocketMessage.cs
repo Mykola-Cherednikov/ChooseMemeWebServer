@@ -41,7 +41,8 @@ namespace ChooseMemeWebServer.Application.Common.WebSocket
     {
         PlayerLeave,
         PlayerIsReady,
-        StartGame
+        StartGame,
+        ChooseMedia
     }
 
     public enum ServerRequestMessageType
@@ -65,6 +66,9 @@ namespace ChooseMemeWebServer.Application.Common.WebSocket
         OnPlayerIsReady,
         OnStartGame,
 
-        AskQuestion
+        AskQuestion,
+        AnswerQuestion,
+        OnChooseMedia,
+        ResultQuestion
     }
 }

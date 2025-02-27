@@ -1,6 +1,8 @@
-﻿namespace ChooseMemeWebServer.Application.Services
+﻿using ChooseMemeWebServer.Application.Interfaces;
+
+namespace ChooseMemeWebServer.Application.Services
 {
-    public class HelperService
+    public class HelperService : IHelperService
     {
         public void Shuffle<T>(IList<T> list)
         {

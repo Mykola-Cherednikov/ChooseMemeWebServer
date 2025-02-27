@@ -1,4 +1,4 @@
-﻿using ChooseMemeWebServer.Application.DTO.PlayerService;
+﻿using ChooseMemeWebServer.Application.DTO.PlayerService.Request;
 using ChooseMemeWebServer.Application.Models;
 
 namespace ChooseMemeWebServer.Application.Interfaces
@@ -17,8 +17,10 @@ namespace ChooseMemeWebServer.Application.Interfaces
 
         public Player? GetOnlinePlayer(string playerId);
 
-        public Task SetPlayerIsReady(SetPlayerIsReadyDTO data);
+        public Task SetPlayerIsReady(SetPlayerIsReadyRequestDTO data);
 
         public Task SetLeader(Player player, Lobby lobby);
+
+        public Task ChooseMedia(ChooseMediaRequestDTO data);
     }
 }

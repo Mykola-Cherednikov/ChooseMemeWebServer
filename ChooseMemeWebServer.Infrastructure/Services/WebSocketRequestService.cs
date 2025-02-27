@@ -1,7 +1,7 @@
 ﻿using ChooseMemeWebServer.Application.Common.WebSocket;
 using ChooseMemeWebServer.Application.DTO;
-using ChooseMemeWebServer.Application.DTO.LobbyService;
-using ChooseMemeWebServer.Application.DTO.PlayerService;
+using ChooseMemeWebServer.Application.DTO.LobbyService.Request;
+using ChooseMemeWebServer.Application.DTO.PlayerService.Request;
 using ChooseMemeWebServer.Application.Interfaces;
 using ChooseMemeWebServer.Application.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,13 +14,14 @@ namespace ChooseMemeWebServer.Infrastructure.Services
     {
         private static Dictionary<PlayerRequestMessageType, CallInfo> _playerRequestToCallInfoCache = new()
         {
-            { PlayerRequestMessageType.StartGame, new CallInfo(typeof(ILobbyService), "StartGame", typeof(StartGameDTO)) },
-            { PlayerRequestMessageType.PlayerIsReady, new CallInfo(typeof(IPlayerService), "SetPlayerIsReady", typeof(SetPlayerIsReadyDTO)) }
+            { PlayerRequestMessageType.StartGame, new CallInfo(typeof(ILobbyService), "StartGame", typeof(StartGameRequestDTO)) },
+            { PlayerRequestMessageType.PlayerIsReady, new CallInfo(typeof(IPlayerService), "SetPlayerIsReady", typeof(SetPlayerIsReadyRequestDTO)) },
+            { PlayerRequestMessageType.ChooseMedia, new CallInfo(typeof(IPlayerService), "ChooseMedia", typeof(ChooseMediaRequestDTO)) }
         };
 
         private static Dictionary<ServerRequestMessageType, CallInfo> _serverRequestToCallInfoCache = new()
         {
-            { ServerRequestMessageType.NextStatus, new CallInfo(typeof(ILobbyService), "NextStatus", typeof(NextStatusDTO)) }
+            { ServerRequestMessageType.NextStatus, new CallInfo(typeof(ILobbyService), "NextStatus", typeof(NextStatusRequestDTO)) }
         };
 
         public async Task HandlePlayerRequest(PlayerRequestMessage message, Player player, Lobby lobby)
@@ -40,7 +41,7 @@ namespace ChooseMemeWebServer.Infrastructure.Services
                     return;
                 }
 
-                var data = JsonSerializer.Deserialize(string.IsNullOrEmpty(message.WebSocketData) ? "{}" : message.WebSocketData, callInfo.DataType) as IPlayerWebSocketData;
+                var data = JsonSerializer.Deserialize(string.IsNullOrEmpty(message.WebSocketData) ? "{}" : message.WebSocketData, callInfo.DataType) as IPlayerWebSocketRequestData;
 
                 if (data == null)
                 {
@@ -75,7 +76,7 @@ namespace ChooseMemeWebServer.Infrastructure.Services
                     return;
                 }
 
-                var data = JsonSerializer.Deserialize(string.IsNullOrEmpty(message.WebSocketData) ? "{}" : message.WebSocketData, callInfo.DataType) as IServerWebSocketData;
+                var data = JsonSerializer.Deserialize(string.IsNullOrEmpty(message.WebSocketData) ? "{}" : message.WebSocketData, callInfo.DataType) as IServerWebSocketRequestData;
 
                 if (data == null)
                 {

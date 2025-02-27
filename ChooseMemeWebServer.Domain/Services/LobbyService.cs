@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using ChooseMemeWebServer.Application.Common.WebSocket;
 using ChooseMemeWebServer.Application.DTO;
-using ChooseMemeWebServer.Application.DTO.LobbyService;
 using ChooseMemeWebServer.Application.Interfaces;
 using ChooseMemeWebServer.Application.Models;
 using System.Text;
@@ -9,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using System.Collections.Concurrent;
 using System.Dynamic;
 using ChooseMemeWebServer.Core.Entities;
+using System.Numerics;
+using ChooseMemeWebServer.Application.DTO.LobbyService.Request;
 
 namespace ChooseMemeWebServer.Application.Services
 {
@@ -47,6 +48,7 @@ namespace ChooseMemeWebServer.Application.Services
             helperService.Shuffle(preset.Media);
             helperService.Shuffle(preset.Questions);
 
+            lobby.PresetId = presetId;
             lobby.Media = new Queue<Media>(preset.Media);
             lobby.Questions = new Queue<Question>(preset.Questions);
 
@@ -174,7 +176,7 @@ namespace ChooseMemeWebServer.Application.Services
         }
 
         // WebSocket
-        public async Task StartGame(StartGameDTO data)
+        public async Task StartGame(StartGameRequestDTO data)
         {
             if (!data.Player.IsLeader)
             {
@@ -189,7 +191,7 @@ namespace ChooseMemeWebServer.Application.Services
         }
 
         // WebSocket Server
-        public async Task NextStatus(NextStatusDTO data)
+        public async Task NextStatus(NextStatusRequestDTO data)
         {
             var status = data.Lobby.StatusQueue.Dequeue().ToString();
 
@@ -209,7 +211,7 @@ namespace ChooseMemeWebServer.Application.Services
             }
         }
 
-        private async Task AskQuestion(NextStatusDTO data)
+        private async Task AskQuestion(NextStatusRequestDTO data)
         {
             var question = data.Lobby.Questions.Dequeue();
 
@@ -219,12 +221,26 @@ namespace ChooseMemeWebServer.Application.Services
             await sender.SendMessageToServer(data.Lobby, payload);
         }
 
-        private void AnswerQuestion(NextStatusDTO data)
+        private async void AnswerQuestion(NextStatusRequestDTO data)
         {
+            foreach (var player in data.Lobby.Players)
+            {
+                while(player.Media.Count < 4 && data.Lobby.Media.Count != 0)
+                {
+                    player.Media.Add(data.Lobby.Media.Dequeue());
+                }
 
+                var clientPayload = new WebSocketResponseMessage(WebSocketMessageResponseType.AskQuestion, mapper.Map<List<MediaDTO>>(player.Media));
+
+                await sender.SendMessageToPlayer(player, clientPayload);
+            }
+
+            var serverPayload = new WebSocketResponseMessage(WebSocketMessageResponseType.AskQuestion);
+
+            await sender.SendMessageToServer(data.Lobby, serverPayload);
         }
 
-        private void ResultsQuestion(NextStatusDTO data)
+        private void ResultsQuestion(NextStatusRequestDTO data)
         {
 
         }
