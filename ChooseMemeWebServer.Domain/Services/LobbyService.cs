@@ -10,6 +10,7 @@ using System.Dynamic;
 using ChooseMemeWebServer.Core.Entities;
 using System.Numerics;
 using ChooseMemeWebServer.Application.DTO.LobbyService.Request;
+using System.Reflection;
 
 namespace ChooseMemeWebServer.Application.Services
 {
@@ -196,7 +197,7 @@ namespace ChooseMemeWebServer.Application.Services
             var status = data.Lobby.StatusQueue.Dequeue().ToString();
 
             var instance = this;
-            var method = instance.GetType().GetMethod(status);
+            var method = instance.GetType().GetMethod(status, BindingFlags.NonPublic | BindingFlags.Instance);
 
             if (method == null)
             {
