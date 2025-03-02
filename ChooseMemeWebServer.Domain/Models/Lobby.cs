@@ -33,7 +33,7 @@ namespace ChooseMemeWebServer.Application.Models
         GameStart,
         AskQuestion,
         AnswerQuestion,
-        QuestionResults,
+        ShowAnswersToQuestion,
         EndResult,
         End
     }

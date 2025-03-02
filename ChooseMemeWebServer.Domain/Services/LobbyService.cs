@@ -35,10 +35,10 @@ namespace ChooseMemeWebServer.Application.Services
             {
                 lobby.StatusQueue.Enqueue(LobbyStatus.AskQuestion);
                 lobby.StatusQueue.Enqueue(LobbyStatus.AnswerQuestion);
-                lobby.StatusQueue.Enqueue(LobbyStatus.QuestionResults);
+                lobby.StatusQueue.Enqueue(LobbyStatus.ShowAnswersToQuestion);
             }
 
-            lobby.StatusQueue.Enqueue(LobbyStatus.EndResult);
+            //lobby.StatusQueue.Enqueue(LobbyStatus.EndResult);
             lobby.StatusQueue.Enqueue(LobbyStatus.End);
 
             activeLobbies.TryAdd(lobby.Code, lobby);
@@ -270,6 +270,7 @@ namespace ChooseMemeWebServer.Application.Services
             var clientPayload = new WebSocketResponseMessage(WebSocketMessageResponseType.ShowAnswersToQuestion);
             await sender.SendMessageToAllPlayers(data.Lobby, clientPayload);
 
+            helperService.Shuffle(data.Lobby.PlayerOfferedMedia);
             var serverPayload = new WebSocketResponseMessage(WebSocketMessageResponseType.ShowAnswersToQuestion, mapper.Map<List<PlayerToMediaDTO>>(data.Lobby.PlayerOfferedMedia));
             await sender.SendMessageToServer(data.Lobby, serverPayload);
         }
