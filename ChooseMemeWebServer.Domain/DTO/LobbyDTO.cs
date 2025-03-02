@@ -17,6 +17,10 @@ namespace ChooseMemeWebServer.Application.DTO
 
         public string PresetId { get; set; } = string.Empty;
 
+        public List<PlayerToMediaDTO> PlayerOfferedMedia { get; set; } = new();
+
+        public List<PlayerToMediaDTO> PlayerOfferedMediaHistory { get; set; } = new();
+
         public void Mapping(AutoMapper.Profile autoMapperProfile)
         {
             autoMapperProfile.CreateMap<Lobby, LobbyDTO>()

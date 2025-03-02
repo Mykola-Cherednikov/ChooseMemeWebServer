@@ -65,10 +65,12 @@ namespace ChooseMemeWebServer.Application.Common.WebSocket
         NewLeader,
         OnPlayerIsReady,
         OnStartGame,
+        OnChooseMedia,
 
         AskQuestion,
         AnswerQuestion,
-        OnChooseMedia,
+        ShowAnswersToQuestion,
+        VotingQuestion,
         ResultQuestion
     }
 }

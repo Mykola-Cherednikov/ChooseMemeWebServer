@@ -21,6 +21,10 @@ namespace ChooseMemeWebServer.Application.Models
         public Queue<Media> Media { get; set; } = new();
 
         public Queue<Question> Questions { get; set; } = new();
+
+        public List<PlayerToMedia> PlayerOfferedMedia { get; set; } = new();
+
+        public List<PlayerToMedia> PlayerOfferedMediaHistory { get; set; } = new();
     }
 
     public enum LobbyStatus

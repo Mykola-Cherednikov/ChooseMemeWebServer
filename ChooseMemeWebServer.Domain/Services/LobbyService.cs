@@ -7,6 +7,7 @@ using ChooseMemeWebServer.Application.Models;
 using ChooseMemeWebServer.Core.Entities;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Concurrent;
+using System.Numerics;
 using System.Reflection;
 using System.Text;
 
@@ -206,6 +207,9 @@ namespace ChooseMemeWebServer.Application.Services
                 return;
             }
 
+            data.Lobby.Status = (LobbyStatus)Enum.Parse(typeof(LobbyStatus), status);
+            data.Lobby.Players.ForEach(p => p.IsReady = false);
+
             var result = method.Invoke(instance, [data]);
 
             if (result is Task task)
@@ -220,11 +224,10 @@ namespace ChooseMemeWebServer.Application.Services
 
             var payload = new WebSocketResponseMessage(WebSocketMessageResponseType.AskQuestion, mapper.Map<QuestionDTO>(question));
 
-            data.Lobby.Status = LobbyStatus.AskQuestion;
             await sender.SendMessageToServer(data.Lobby, payload);
         }
 
-        private async void AnswerQuestion(NextStatusRequestDTO data)
+        private async Task AnswerQuestion(NextStatusRequestDTO data)
         {
             foreach (var player in data.Lobby.Players)
             {
@@ -233,17 +236,45 @@ namespace ChooseMemeWebServer.Application.Services
                     player.Media.Add(data.Lobby.Media.Dequeue());
                 }
 
-                var clientPayload = new WebSocketResponseMessage(WebSocketMessageResponseType.AskQuestion, mapper.Map<List<MediaDTO>>(player.Media));
+                var clientPayload = new WebSocketResponseMessage(WebSocketMessageResponseType.AnswerQuestion, mapper.Map<List<MediaDTO>>(player.Media));
 
                 await sender.SendMessageToPlayer(player, clientPayload);
             }
 
-            var serverPayload = new WebSocketResponseMessage(WebSocketMessageResponseType.AskQuestion);
+            var serverPayload = new WebSocketResponseMessage(WebSocketMessageResponseType.AnswerQuestion);
 
             await sender.SendMessageToServer(data.Lobby, serverPayload);
         }
 
-        private void ResultsQuestion(NextStatusRequestDTO data)
+        private void SummingUpAnswers(NextStatusRequestDTO data)
+        {
+            foreach (var player in data.Lobby.Players)
+            {
+                if (player.ChosenMedia == null)
+                {
+                    Random random = new Random();
+
+                    player.ChosenMedia = player.Media[random.Next(player.Media.Count)];
+                }
+
+                data.Lobby.PlayerOfferedMedia.Add(new PlayerToMedia() { Player = player, Media = player.ChosenMedia, Points = 0 });
+                player.Media.Remove(player.ChosenMedia);
+                player.ChosenMedia = null!;
+            }
+        }
+
+        private async Task ShowAnswersToQuestion(NextStatusRequestDTO data)
+        {
+            SummingUpAnswers(data);
+
+            var clientPayload = new WebSocketResponseMessage(WebSocketMessageResponseType.ShowAnswersToQuestion);
+            await sender.SendMessageToAllPlayers(data.Lobby, clientPayload);
+
+            var serverPayload = new WebSocketResponseMessage(WebSocketMessageResponseType.ShowAnswersToQuestion, mapper.Map<List<PlayerToMediaDTO>>(data.Lobby.PlayerOfferedMedia));
+            await sender.SendMessageToServer(data.Lobby, serverPayload);
+        }
+
+        private async Task VotingQuestion(NextStatusRequestDTO data)
         {
 
         }

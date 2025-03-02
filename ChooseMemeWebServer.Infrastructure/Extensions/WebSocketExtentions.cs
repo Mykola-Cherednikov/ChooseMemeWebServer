@@ -11,6 +11,11 @@ namespace ChooseMemeWebServer.Infrastructure.Extensions
     {
         public static async Task WriteDataToWebSocket(this WebSocket webSocket, WebSocketResponseMessage data)
         {
+            if(webSocket.State == WebSocketState.Closed)
+            {
+                return;
+            }
+
             string json = JsonSerializer.Serialize(data);
 
             var buffer = Encoding.UTF8.GetBytes(json);
@@ -46,7 +51,7 @@ namespace ChooseMemeWebServer.Infrastructure.Extensions
 
         public static async Task SendMessageToPlayer(this IWebSocketConnectionService connectionService, Player player, WebSocketResponseMessage payload)
         {
-            if (!connectionService.TryGetPlayerConnection(player, out var playerWebSocket) || playerWebSocket.State == WebSocketState.Closed)
+            if (!connectionService.TryGetPlayerConnection(player, out var playerWebSocket))
             {
                 return;
             }
@@ -56,7 +61,7 @@ namespace ChooseMemeWebServer.Infrastructure.Extensions
 
         public static async Task SendMessageToServer(this IWebSocketConnectionService connectionService, Server server, WebSocketResponseMessage payload)
         {
-            if (!connectionService.TryGetServerConnection(server, out var serverWebSocket) || serverWebSocket.State == WebSocketState.Closed)
+            if (!connectionService.TryGetServerConnection(server, out var serverWebSocket))
             {
                 return;
             }
