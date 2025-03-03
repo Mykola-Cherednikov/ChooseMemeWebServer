@@ -1,6 +1,7 @@
 ﻿using ChooseMemeWebServer.Application.Interfaces;
 using ChooseMemeWebServer.Core;
 using ChooseMemeWebServer.Core.Entities;
+using ChooseMemeWebServer.Core.Exceptions.PresetExceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChooseMemeWebServer.Application.Services
@@ -28,7 +29,7 @@ namespace ChooseMemeWebServer.Application.Services
 
             if (preset == null)
             {
-                return null;
+                throw new PresetNotFoundException();
             }
 
             return preset;

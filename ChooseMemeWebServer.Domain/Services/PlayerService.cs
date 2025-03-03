@@ -5,6 +5,8 @@ using ChooseMemeWebServer.Application.DTO.PlayerService.Request;
 using ChooseMemeWebServer.Application.DTO.PlayerService.Response;
 using ChooseMemeWebServer.Application.Interfaces;
 using ChooseMemeWebServer.Application.Models;
+using ChooseMemeWebServer.Core.Exceptions.MediaExceptions;
+using ChooseMemeWebServer.Core.Exceptions.PlayerExceptions;
 using RandomNameGeneratorLibrary;
 
 namespace ChooseMemeWebServer.Application.Services
@@ -89,7 +91,7 @@ namespace ChooseMemeWebServer.Application.Services
         {
             if (data.Player.IsReady || data.Lobby.Status != LobbyStatus.WaitingForPlayers)
             {
-                return;
+                throw new PlayerIsReadyException(data.Player.Username);
             }
 
             data.Player.IsReady = true;
@@ -115,7 +117,7 @@ namespace ChooseMemeWebServer.Application.Services
 
             if (chosenMedia == null)
             {
-                return;
+                throw new MediaNotFoundException();
             }
 
             data.Player.IsReady = true;

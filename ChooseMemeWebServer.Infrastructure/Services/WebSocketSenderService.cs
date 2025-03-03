@@ -1,6 +1,7 @@
 ﻿using ChooseMemeWebServer.Application.Common.WebSocket;
 using ChooseMemeWebServer.Application.Interfaces;
 using ChooseMemeWebServer.Application.Models;
+using ChooseMemeWebServer.Core.Exceptions.ServerExceptions;
 using ChooseMemeWebServer.Infrastructure.Extensions;
 
 namespace ChooseMemeWebServer.Infrastructure.Services
@@ -31,12 +32,19 @@ namespace ChooseMemeWebServer.Infrastructure.Services
 
         public async Task SendMessageToServer(Server server, WebSocketResponseMessage payload)
         {
-            if(server == null)
+            try
             {
-                return;
-            }
 
-            await _connectionManager.SendMessageToServer(server, payload);
+                if (server == null)
+                {
+                    throw new ServerNotFoundException();
+                }
+				await _connectionManager.SendMessageToServer(server, payload);
+			}
+            catch (Exception ex)
+            {
+				
+			}
         }
 
         public async Task SendMessageToServer(Lobby lobby, WebSocketResponseMessage payload)

@@ -8,16 +8,16 @@ namespace ChooseMemeWebServer.API.Controllers
     public class WebSocketRequestImitatorController(IWebSocketRequestService requestService) : ControllerBase
     {
         [HttpPost("/ImitatePlayerRequest")]
-        public IActionResult ImitatePlayerRequest([FromBody]ImmitatePlayerHandleDTO data)
+        public async Task<IActionResult> ImitatePlayerRequest([FromBody]ImmitatePlayerHandleDTO data)
         {
-            requestService.ImmitateHandlePlayerRequest(data);
+            await requestService.ImmitateHandlePlayerRequest(data);
             return Ok();
         }
 
         [HttpPost("/ImmitatePlayerStartGameRequest")]
-        public IActionResult ImitatePlayerStartGameRequest(string playerId)
+        public async Task<IActionResult> ImitatePlayerStartGameRequest(string playerId)
         {
-            return ImitatePlayerRequest(
+            return await ImitatePlayerRequest(
                 new ImmitatePlayerHandleDTO() { 
                     PlayerId = playerId, 
                     Message = new PlayerRequestMessage() { 
@@ -28,9 +28,9 @@ namespace ChooseMemeWebServer.API.Controllers
         }
 
         [HttpPost("/ImmitatePlayerLeaveRequest")]
-        public IActionResult ImitatePlayerLeaveRequest(string playerId)
+        public async Task<IActionResult> ImitatePlayerLeaveRequest(string playerId)
         {
-            return ImitatePlayerRequest(
+            return await ImitatePlayerRequest(
                 new ImmitatePlayerHandleDTO()
                 {
                     PlayerId = playerId,
@@ -43,9 +43,9 @@ namespace ChooseMemeWebServer.API.Controllers
         }
 
         [HttpPost("/ImmitatePlayerIsReadyRequest")]
-        public IActionResult ImitatePlayerIsReadyRequest(string playerId)
+        public async Task<IActionResult> ImitatePlayerIsReadyRequest(string playerId)
         {
-            return ImitatePlayerRequest(
+            return await ImitatePlayerRequest(
                 new ImmitatePlayerHandleDTO()
                 {
                     PlayerId = playerId,

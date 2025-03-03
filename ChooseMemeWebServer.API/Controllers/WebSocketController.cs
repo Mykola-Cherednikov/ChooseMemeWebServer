@@ -1,6 +1,9 @@
 ﻿using ChooseMemeWebServer.Application.Common.WebSocket;
+using ChooseMemeWebServer.Application.Exceptions;
 using ChooseMemeWebServer.Application.Interfaces;
 using ChooseMemeWebServer.Application.Models;
+using ChooseMemeWebServer.Core.Exceptions.LobbyExceptions;
+using ChooseMemeWebServer.Core.Exceptions.WebSocketExceptions;
 using ChooseMemeWebServer.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.WebSockets;
@@ -22,36 +25,41 @@ namespace ChooseMemeWebServer.API.Controllers
                 if (string.IsNullOrEmpty(username))
                 {
                     await webSocket.WriteDataToWebSocket(new WebSocketResponseMessage(WebSocketMessageResponseType.UserNameIsNullOrEmpty));
-                    return;
-                }
+                    throw new UsernameIsNullOrEmptyException();
+
+				}
 
                 if (string.IsNullOrEmpty(lobbyCode))
                 {
                     await webSocket.WriteDataToWebSocket(new WebSocketResponseMessage(WebSocketMessageResponseType.LobbyCodeIsNullOrEmpty));
-                    return;
-                }
+                    throw new LobbyCodeIsNullOrEmptyException();
+
+				}
 
                 Player player = playerService.AddOnlinePlayer(username);
 
                 connectionService.AddPlayerConnection(player, webSocket);
 
-                Lobby? lobby = await lobbyService.AddPlayerToLobby(lobbyCode, player);
-
-                if (lobby == null)
+                try
                 {
-                    connectionService.RemovePlayerConnection(player);
+					Lobby lobby = await lobbyService.AddPlayerToLobby(lobbyCode, player);
 
-                    await webSocket.WriteDataToWebSocket(new WebSocketResponseMessage(WebSocketMessageResponseType.CantFindLobby));
-                    return;
-                }
+					await ListenPlayer(webSocket, player, lobby);
 
-                await ListenPlayer(webSocket, player, lobby);
+					await lobbyService.LeaveFromLobby(lobby, player);
 
-                await lobbyService.LeaveFromLobby(lobby, player);
+					connectionService.RemovePlayerConnection(player);
 
-                connectionService.RemovePlayerConnection(player);
+					playerService.RemoveOnlinePlayer(player);
+				}
+                catch (LobbyNotFoundException ex)
+                {
+					connectionService.RemovePlayerConnection(player);
 
-                playerService.RemoveOnlinePlayer(player);
+					await webSocket.WriteDataToWebSocket(new WebSocketResponseMessage(WebSocketMessageResponseType.CantFindLobby));
+
+                    Console.WriteLine(ex.ToString());
+				}
             }
         }
 
@@ -102,38 +110,37 @@ namespace ChooseMemeWebServer.API.Controllers
 
                 Lobby lobby;
 
-                if (bool.TryParse(configuration["IsTesting"], out bool isTesting) && isTesting && !string.IsNullOrEmpty(lobbyCode))
+                try
                 {
-                    var possibleLobby = lobbyService.GetLobby(lobbyCode);
-
-                    if (possibleLobby == null)
+                    if (bool.TryParse(configuration["IsTesting"], out bool isTesting) && isTesting && !string.IsNullOrEmpty(lobbyCode))
                     {
-                        await webSocket.WriteDataToWebSocket(new WebSocketResponseMessage(WebSocketMessageResponseType.CantFindLobby));
-                        return;
+                        var possibleLobby = lobbyService.GetLobby(lobbyCode);
+                        lobby = possibleLobby;
                     }
-
-                    if (possibleLobby.Server != null)
+                    else
                     {
-                        await webSocket.WriteDataToWebSocket(new WebSocketResponseMessage(WebSocketMessageResponseType.LobbyAlreadyHaveServer));
-                        return;
+                        lobby = await lobbyService.CreateLobby(presetId);
                     }
+                    await lobbyService.AddServerToLobby(lobby, server);
 
-                    lobby = possibleLobby;
+                    await ListenServer(webSocket, server, lobby);
+
+                    await lobbyService.CloseLobby(lobby, server);
+
+                    connectionService.RemoveServerConnection(server);
+
+                    serverService.RemoveOnlineServer(server);
                 }
-                else
+                catch (LobbyNotFoundException ex)
                 {
-                    lobby = await lobbyService.CreateLobby(presetId);
+                    await webSocket.WriteDataToWebSocket(new WebSocketResponseMessage(WebSocketMessageResponseType.CantFindLobby));
+                    Console.WriteLine(ex.ToString());
                 }
-
-                await lobbyService.AddServerToLobby(lobby, server);
-
-                await ListenServer(webSocket, server, lobby);
-
-                await lobbyService.CloseLobby(lobby, server);
-
-                connectionService.RemoveServerConnection(server);
-
-                serverService.RemoveOnlineServer(server);
+                catch (LobbyAlreadyHaveServerException ex)
+                {
+                    await webSocket.WriteDataToWebSocket(new WebSocketResponseMessage(WebSocketMessageResponseType.LobbyAlreadyHaveServer));
+                    Console.WriteLine(ex.ToString());
+                }
             }
         }
 

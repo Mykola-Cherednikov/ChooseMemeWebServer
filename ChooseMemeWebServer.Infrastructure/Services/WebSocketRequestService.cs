@@ -4,6 +4,9 @@ using ChooseMemeWebServer.Application.DTO.LobbyService.Request;
 using ChooseMemeWebServer.Application.DTO.PlayerService.Request;
 using ChooseMemeWebServer.Application.Interfaces;
 using ChooseMemeWebServer.Application.Models;
+using ChooseMemeWebServer.Core.Exceptions.PlayerExceptions;
+using ChooseMemeWebServer.Core.Exceptions.ServerExceptions;
+using ChooseMemeWebServer.Core.Exceptions.WebSocketExceptions;
 using Microsoft.Extensions.DependencyInjection;
 using System.Numerics;
 using System.Text.Json;
@@ -31,22 +34,25 @@ namespace ChooseMemeWebServer.Infrastructure.Services
 
                 if (!_playerRequestToCallInfoCache.TryGetValue(message.Type, out var callInfo))
                 {
-                    return;
-                }
+                    throw new CallInfoNotFoundException(message.MessageTypeName);
+
+				}
 
                 var classInstance = scope.ServiceProvider.GetService(callInfo.Class);
 
                 if (classInstance == null)
                 {
-                    return;
-                }
+                    throw new InstanceNotFoundException(callInfo.Class.Name);
+
+				}
 
                 var data = JsonSerializer.Deserialize(string.IsNullOrEmpty(message.WebSocketData) ? "{}" : message.WebSocketData, callInfo.DataType) as IPlayerWebSocketRequestData;
 
                 if (data == null)
                 {
-                    return;
-                }
+                    throw new DataIsEmptyException();
+
+				}
 
                 data.Player = player;
                 data.Lobby = lobby;
@@ -66,21 +72,21 @@ namespace ChooseMemeWebServer.Infrastructure.Services
             {
                 if (!_serverRequestToCallInfoCache.TryGetValue(message.Type, out var callInfo))
                 {
-                    return;
+                    throw new CallInfoNotFoundException(message.MessageTypeName);
                 }
 
                 var classInstance = scope.ServiceProvider.GetService(callInfo.Class);
 
                 if (classInstance == null)
                 {
-                    return;
+                    throw new InstanceNotFoundException(callInfo.Class.Name);
                 }
 
                 var data = JsonSerializer.Deserialize(string.IsNullOrEmpty(message.WebSocketData) ? "{}" : message.WebSocketData, callInfo.DataType) as IServerWebSocketRequestData;
 
                 if (data == null)
                 {
-                    return;
+                    throw new DataIsEmptyException();
                 }
 
                 data.Server = server;
@@ -103,8 +109,8 @@ namespace ChooseMemeWebServer.Infrastructure.Services
 
                 if (player == null)
                 {
-                    return;
-                }
+                    throw new PlayerNotFoundException();
+				}
 
                 await HandlePlayerRequest(data.Message, player, player.Lobby);
             }
@@ -118,8 +124,9 @@ namespace ChooseMemeWebServer.Infrastructure.Services
 
                 if (server == null)
                 {
-                    return;
-                }
+                    throw new ServerNotFoundException();
+
+				}
 
                 await HandleServerRequest(data.Message, server, server.Lobby);
             }

@@ -1,6 +1,7 @@
 ﻿using ChooseMemeWebServer.Application.Interfaces;
 using ChooseMemeWebServer.Core;
 using ChooseMemeWebServer.Core.Entities;
+using ChooseMemeWebServer.Core.Exceptions.MediaExceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,13 +13,14 @@ namespace ChooseMemeWebServer.Application.Services
         {
             if (!dataService.GetAllowedFormats().Contains(Path.GetExtension(file.FileName)))
             {
-                return null;
+                throw new MediaNotAllowedFormatException(file.FileName);
             }
 
             if (file.Length / 1_048_576 > 10) // Move to config
             {
-                return null;
-            }
+                throw new MediaFileSizeException(file.Length);
+
+			}
 
             var fileName = file.FileName.Substring(0, Math.Min(40, file.FileName.Length));
 
@@ -26,15 +28,16 @@ namespace ChooseMemeWebServer.Application.Services
 
             if (Path.Exists(filePath))
             {
-                return null;
+                throw new MediaAlreadyExistsException(filePath);
             }
 
             var preset = await context.Presets.FirstOrDefaultAsync(p => p.Id == presetId);
 
             if (preset == null)
             {
-                return null;
-            }
+                throw new MediaPresetNotFoundException();
+
+			}
 
             var media = new Media()
             {
@@ -61,7 +64,7 @@ namespace ChooseMemeWebServer.Application.Services
 
             if (media == null)
             {
-                return;
+                throw new MediaNotFoundException();
             }
 
             File.Delete(Path.Combine(dataService.GetPresetFolderPath(), media.Preset.Id, media.FileName));

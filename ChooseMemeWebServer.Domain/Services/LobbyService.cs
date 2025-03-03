@@ -2,9 +2,11 @@
 using ChooseMemeWebServer.Application.Common.WebSocket;
 using ChooseMemeWebServer.Application.DTO;
 using ChooseMemeWebServer.Application.DTO.LobbyService.Request;
+using ChooseMemeWebServer.Application.Exceptions;
 using ChooseMemeWebServer.Application.Interfaces;
 using ChooseMemeWebServer.Application.Models;
 using ChooseMemeWebServer.Core.Entities;
+using ChooseMemeWebServer.Core.Exceptions.LobbyExceptions;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Concurrent;
 using System.Numerics;
@@ -60,7 +62,7 @@ namespace ChooseMemeWebServer.Application.Services
         {
             if (lobby.Server != server)
             {
-                return;
+                throw new ServerLobbyOwnerException();
             }
 
             foreach (var bot in lobby.Players.Where(p => p.IsBot).ToList())
@@ -98,7 +100,7 @@ namespace ChooseMemeWebServer.Application.Services
         {
             if(!activeLobbies.TryGetValue(code, out var lobby))
             {
-                return null; // Exeption here
+                throw new LobbyNotFoundException(code);
             }
 
             return lobby;
@@ -108,7 +110,7 @@ namespace ChooseMemeWebServer.Application.Services
         {
             if (!activeLobbies.TryGetValue(code, out var lobby))
             {
-                return null; // Exeption here
+                throw new LobbyNotFoundException(code);
             }
 
             lobby.Players.Add(player);
@@ -184,7 +186,7 @@ namespace ChooseMemeWebServer.Application.Services
         {
             if (!data.Player.IsLeader)
             {
-                return;
+                throw new PlayerIsNotLeaderException();
             }
 
             var payload = new WebSocketResponseMessage(WebSocketMessageResponseType.OnStartGame);
@@ -204,7 +206,7 @@ namespace ChooseMemeWebServer.Application.Services
 
             if (method == null)
             {
-                return;
+                throw new NextLobbyStatusNotFoundException(status);
             }
 
             data.Lobby.Status = (LobbyStatus)Enum.Parse(typeof(LobbyStatus), status);

@@ -1,6 +1,7 @@
 ﻿using ChooseMemeWebServer.Application.Common.WebSocket;
 using ChooseMemeWebServer.Application.Interfaces;
 using ChooseMemeWebServer.Application.Models;
+using ChooseMemeWebServer.Core.Exceptions.WebSocketExceptions;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
@@ -13,7 +14,7 @@ namespace ChooseMemeWebServer.Infrastructure.Extensions
         {
             if(webSocket.State == WebSocketState.Closed)
             {
-                return;
+                throw new WebSocketException();
             }
 
             string json = JsonSerializer.Serialize(data);
@@ -51,19 +52,25 @@ namespace ChooseMemeWebServer.Infrastructure.Extensions
 
         public static async Task SendMessageToPlayer(this IWebSocketConnectionService connectionService, Player player, WebSocketResponseMessage payload)
         {
-            if (!connectionService.TryGetPlayerConnection(player, out var playerWebSocket))
+            try
             {
-                return;
-            }
+                if (!connectionService.TryGetPlayerConnection(player, out var playerWebSocket))
+                {
+                    throw new CannotGetPlayerConnectionException(player.Username);
+                }
 
-            await playerWebSocket.WriteDataToWebSocket(payload);
+                await playerWebSocket.WriteDataToWebSocket(payload);
+            }
+            catch (Exception ex)
+            {
+            }
         }
 
         public static async Task SendMessageToServer(this IWebSocketConnectionService connectionService, Server server, WebSocketResponseMessage payload)
         {
             if (!connectionService.TryGetServerConnection(server, out var serverWebSocket))
             {
-                return;
+                throw new CannotGetServerConnectionException();
             }
 
             await serverWebSocket.WriteDataToWebSocket(payload);
