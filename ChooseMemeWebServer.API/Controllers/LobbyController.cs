@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ChooseMemeWebServer.Application.DTO;
+using ChooseMemeWebServer.Application.Exceptions;
 using ChooseMemeWebServer.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +17,16 @@ namespace ChooseMemeWebServer.API.Controllers
         [HttpGet("/GetLobby")]
         public IActionResult GetLobby([FromQuery] string code)
         {
-            return Ok(mapper.Map<LobbyDTO>(lobbyService.GetLobby(code)));
+            try
+            {
+                var lobby = lobbyService.GetLobby(code);
+
+                return Ok(mapper.Map<LobbyDTO>(lobby));
+            }
+            catch (ExpectedException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("/CreateLobby")]

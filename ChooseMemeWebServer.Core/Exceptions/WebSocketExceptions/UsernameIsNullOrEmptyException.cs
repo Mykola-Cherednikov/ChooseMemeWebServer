@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ChooseMemeWebServer.Core.Exceptions.WebSocketExceptions
 {
-    public class UsernameIsNullOrEmptyException : DetailedException
+    public class UsernameIsNullOrEmptyException : ExpectedException
     {
         public UsernameIsNullOrEmptyException() : base("Username is null or empty")
 		{

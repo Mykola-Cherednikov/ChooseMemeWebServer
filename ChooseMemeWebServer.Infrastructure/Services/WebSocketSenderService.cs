@@ -1,50 +1,85 @@
 ﻿using ChooseMemeWebServer.Application.Common.WebSocket;
 using ChooseMemeWebServer.Application.Interfaces;
 using ChooseMemeWebServer.Application.Models;
-using ChooseMemeWebServer.Core.Exceptions.ServerExceptions;
+using ChooseMemeWebServer.Core.Exceptions.WebSocketExceptions;
 using ChooseMemeWebServer.Infrastructure.Extensions;
+using System.Net.WebSockets;
 
 namespace ChooseMemeWebServer.Infrastructure.Services
 {
     public class WebSocketSenderService : IWebSocketSenderService
     {
-        private readonly IWebSocketConnectionService _connectionManager;
+        private readonly IWebSocketConnectionService _connectionService;
 
         public WebSocketSenderService(IWebSocketConnectionService connectionManager)
         {
-            _connectionManager = connectionManager;
+            _connectionService = connectionManager;
         }
 
         public async Task SendMessageBroadcast(Lobby lobby, WebSocketResponseMessage payload)
         {
-            await _connectionManager.SendMessageBroadcast(lobby, payload);
+            await SendMessageToServer(lobby.Server, payload);
+            await SendMessageToAllPlayers(lobby, payload);
         }
 
         public async Task SendMessageToAllPlayers(Lobby lobby, WebSocketResponseMessage payload)
         {
-            await _connectionManager.SendMessageToAllPlayers(lobby, payload);
+            foreach (var player in lobby.Players.Where(p => !p.IsBot).ToList())
+            {
+                await SendMessageToPlayer(player, payload);
+            }
         }
 
         public async Task SendMessageToPlayer(Player player, WebSocketResponseMessage payload)
         {
-            await _connectionManager.SendMessageToPlayer(player, payload);
+            try
+            {
+                if (player == null)
+                {
+                    throw new CannotGetPlayerConnectionException("Unknown");
+                }
+
+                if (player.IsBot)
+                {
+                    return;
+                }
+
+                if (!_connectionService.TryGetPlayerConnection(player, out var playerWebSocket))
+                {
+                    throw new CannotGetPlayerConnectionException(player.Username);
+                }
+
+                await playerWebSocket.WriteDataToWebSocket(payload);
+            }
+            catch (CannotGetPlayerConnectionException ex)
+            {
+                return;
+            }
+            catch (WebSocketException ex)
+            {
+                return;
+            }
         }
 
         public async Task SendMessageToServer(Server server, WebSocketResponseMessage payload)
         {
             try
             {
-
-                if (server == null)
+                if (server == null || !_connectionService.TryGetServerConnection(server, out var serverWebSocket))
                 {
-                    throw new ServerNotFoundException();
+                    throw new CannotGetServerConnectionException();
                 }
-				await _connectionManager.SendMessageToServer(server, payload);
-			}
-            catch (Exception ex)
+
+                await serverWebSocket.WriteDataToWebSocket(payload);
+            }
+            catch (CannotGetServerConnectionException ex)
             {
-				
-			}
+                return;
+            }
+            catch (WebSocketException ex)
+            {
+                return;
+            }
         }
 
         public async Task SendMessageToServer(Lobby lobby, WebSocketResponseMessage payload)

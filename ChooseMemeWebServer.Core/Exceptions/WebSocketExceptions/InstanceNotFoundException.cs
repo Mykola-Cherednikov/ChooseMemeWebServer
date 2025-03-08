@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ChooseMemeWebServer.Core.Exceptions.WebSocketExceptions
 {
-    public class InstanceNotFoundException : DetailedException
+    public class InstanceNotFoundException : ExpectedException
     {
 		public InstanceNotFoundException(string className) : base($"Instance not found: {className}")
 		{

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ChooseMemeWebServer.Core.Exceptions.WebSocketExceptions
 {
-    public class LobbyCodeIsNullOrEmptyException : DetailedException
+    public class LobbyCodeIsNullOrEmptyException : ExpectedException
     {
 		public LobbyCodeIsNullOrEmptyException() : base("Lobby code is null or empty")
 		{

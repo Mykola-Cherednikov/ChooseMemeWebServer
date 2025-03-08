@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ChooseMemeWebServer.Core.Exceptions.LobbyExceptions
 {
-    public class NextLobbyStatusNotFoundException : DetailedException
+    public class NextLobbyStatusNotFoundException : ExpectedException
     {
 		public NextLobbyStatusNotFoundException(
 			string statusName) : base($"Next lobby status '{statusName}' does not exists")

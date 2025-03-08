@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ChooseMemeWebServer.Core.Exceptions.PresetExceptions
 {
-    public class PresetNotFoundException : DetailedException
+    public class PresetNotFoundException : ExpectedException
     {
 		public PresetNotFoundException() : base("Preset not found")
 		{

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ChooseMemeWebServer.Core.Exceptions.WebSocketExceptions
 {
-    public class DataIsEmptyException : DetailedException
+    public class DataIsEmptyException : ExpectedException
     {
 		public DataIsEmptyException() : base("Data is empty")
 		{

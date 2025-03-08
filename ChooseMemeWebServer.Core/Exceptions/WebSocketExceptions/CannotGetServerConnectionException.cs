@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ChooseMemeWebServer.Core.Exceptions.WebSocketExceptions
 {
-    public class CannotGetServerConnectionException : DetailedException
+    public class CannotGetServerConnectionException : ExpectedException
     {
 		public CannotGetServerConnectionException() : base("Cannot connect to server")
 		{

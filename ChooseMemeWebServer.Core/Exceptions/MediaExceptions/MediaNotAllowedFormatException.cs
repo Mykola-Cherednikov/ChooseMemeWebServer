@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ChooseMemeWebServer.Core.Exceptions.MediaExceptions
 {
-    public class MediaNotAllowedFormatException : DetailedException
+    public class MediaNotAllowedFormatException : ExpectedException
     {
 		public MediaNotAllowedFormatException(string path) : base($"Media format is not allowed: {path}")
 		{

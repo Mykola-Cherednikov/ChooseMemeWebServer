@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ChooseMemeWebServer.Core.Exceptions.MediaExceptions
 {
-    public class MediaAlreadyExistsException : DetailedException
+    public class MediaAlreadyExistsException : ExpectedException
     {
 		public MediaAlreadyExistsException(string path) : base($"Media already exists by file path: {path}")
 		{

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ChooseMemeWebServer.Core.Exceptions.PlayerExceptions
 {
-    public class PlayerNotFoundException : DetailedException
+    public class PlayerNotFoundException : ExpectedException
     {
 		public PlayerNotFoundException() : base("Player not found")
 		{

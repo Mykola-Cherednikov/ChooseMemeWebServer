@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ChooseMemeWebServer.Core.Exceptions.LobbyExceptions
 {
-    public class LobbyAlreadyHaveServerException : DetailedException
+    public class LobbyAlreadyHaveServerException : ExpectedException
     {
 		public LobbyAlreadyHaveServerException() : base("Lobby already have server")
 		{

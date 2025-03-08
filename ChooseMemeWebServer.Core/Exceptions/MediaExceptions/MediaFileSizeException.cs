@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ChooseMemeWebServer.Core.Exceptions.MediaExceptions
 {
-    public class MediaFileSizeException : DetailedException
+    public class MediaFileSizeException : ExpectedException
     {
 		public MediaFileSizeException(long size) : base($"Media file size: {size} is above threshold")
 		{

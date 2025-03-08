@@ -2,9 +2,9 @@
 
 namespace ChooseMemeWebServer.Application.Exceptions
 {
-	public class DetailedException : Exception
+	public class ExpectedException : Exception
 	{
-		public DetailedException(string message) : base(message)
+		public ExpectedException(string message) : base(message)
 		{
 		}
 

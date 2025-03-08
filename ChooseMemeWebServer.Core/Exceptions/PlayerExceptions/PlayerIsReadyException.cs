@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ChooseMemeWebServer.Core.Exceptions.PlayerExceptions
 {
-    public class PlayerIsReadyException : DetailedException
+    public class PlayerIsReadyException : ExpectedException
     {
 		public PlayerIsReadyException(string username) : base($"Player '{username}' is ready")
 		{

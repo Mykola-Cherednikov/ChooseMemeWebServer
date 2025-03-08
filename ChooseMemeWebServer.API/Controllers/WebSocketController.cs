@@ -27,14 +27,14 @@ namespace ChooseMemeWebServer.API.Controllers
                     await webSocket.WriteDataToWebSocket(new WebSocketResponseMessage(WebSocketMessageResponseType.UserNameIsNullOrEmpty));
                     throw new UsernameIsNullOrEmptyException();
 
-				}
+                }
 
                 if (string.IsNullOrEmpty(lobbyCode))
                 {
                     await webSocket.WriteDataToWebSocket(new WebSocketResponseMessage(WebSocketMessageResponseType.LobbyCodeIsNullOrEmpty));
                     throw new LobbyCodeIsNullOrEmptyException();
 
-				}
+                }
 
                 Player player = playerService.AddOnlinePlayer(username);
 
@@ -42,24 +42,24 @@ namespace ChooseMemeWebServer.API.Controllers
 
                 try
                 {
-					Lobby lobby = await lobbyService.AddPlayerToLobby(lobbyCode, player);
+                    Lobby lobby = await lobbyService.AddPlayerToLobby(lobbyCode, player);
 
-					await ListenPlayer(webSocket, player, lobby);
+                    await ListenPlayer(webSocket, player, lobby);
 
-					await lobbyService.LeaveFromLobby(lobby, player);
+                    await lobbyService.LeaveFromLobby(lobby, player);
 
-					connectionService.RemovePlayerConnection(player);
+                    connectionService.RemovePlayerConnection(player);
 
-					playerService.RemoveOnlinePlayer(player);
-				}
+                    playerService.RemoveOnlinePlayer(player);
+                }
                 catch (LobbyNotFoundException ex)
                 {
-					connectionService.RemovePlayerConnection(player);
+                    connectionService.RemovePlayerConnection(player);
 
-					await webSocket.WriteDataToWebSocket(new WebSocketResponseMessage(WebSocketMessageResponseType.CantFindLobby));
+                    await webSocket.WriteDataToWebSocket(new WebSocketResponseMessage(WebSocketMessageResponseType.CantFindLobby));
 
                     Console.WriteLine(ex.ToString());
-				}
+                }
             }
         }
 
@@ -80,10 +80,18 @@ namespace ChooseMemeWebServer.API.Controllers
 
                     if (message == null)
                     {
-                        throw new Exception("Message is null"); // Rewrite exeption type here
+                        throw new ExpectedException("Message is null");
                     }
 
                     await requestService.HandlePlayerRequest(message, player, lobby);
+                }
+                catch (JsonException ex)
+                {
+                    Console.WriteLine("Json: " + ex.ToString());
+                }
+                catch (ExpectedException ex)
+                {
+                    Console.WriteLine("Expected: " + ex.ToString());
                 }
                 catch (Exception ex)
                 {
@@ -104,14 +112,14 @@ namespace ChooseMemeWebServer.API.Controllers
             {
                 using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
 
-                Server server = serverService.AddOnlineServer();
-
-                connectionService.AddServerConnection(server, webSocket);
-
-                Lobby lobby;
-
                 try
                 {
+                    Server server = serverService.AddOnlineServer();
+
+                    connectionService.AddServerConnection(server, webSocket);
+
+                    Lobby lobby;
+
                     if (bool.TryParse(configuration["IsTesting"], out bool isTesting) && isTesting && !string.IsNullOrEmpty(lobbyCode))
                     {
                         var possibleLobby = lobbyService.GetLobby(lobbyCode);
@@ -121,6 +129,7 @@ namespace ChooseMemeWebServer.API.Controllers
                     {
                         lobby = await lobbyService.CreateLobby(presetId);
                     }
+
                     await lobbyService.AddServerToLobby(lobby, server);
 
                     await ListenServer(webSocket, server, lobby);
@@ -161,10 +170,18 @@ namespace ChooseMemeWebServer.API.Controllers
 
                     if (message == null)
                     {
-                        throw new Exception("Message is null");
+                        throw new ExpectedException("Message is null");
                     }
 
                     await requestService.HandleServerRequest(message, server, lobby);
+                }
+                catch (JsonException ex)
+                {
+                    Console.WriteLine("Json: " + ex.ToString());
+                }
+                catch (ExpectedException ex)
+                {
+                    Console.WriteLine("Expected: " + ex.ToString());
                 }
                 catch (Exception ex)
                 {

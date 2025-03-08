@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ChooseMemeWebServer.Core.Exceptions.ServerExceptions
 {
-    public class ServerNotFoundException : DetailedException
+    public class ServerNotFoundException : ExpectedException
     {
 		public ServerNotFoundException() : base("Server not found")
 		{
