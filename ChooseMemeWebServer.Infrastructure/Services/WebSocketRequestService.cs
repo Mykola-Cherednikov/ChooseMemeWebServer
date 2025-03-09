@@ -31,7 +31,6 @@ namespace ChooseMemeWebServer.Infrastructure.Services
         {
             using (var scope = provider.CreateScope())
             {
-
                 if (!_playerRequestToCallInfoCache.TryGetValue(message.Type, out var callInfo))
                 {
                     throw new CallInfoNotFoundException(message.MessageTypeName);

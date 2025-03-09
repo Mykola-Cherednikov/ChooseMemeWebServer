@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using ChooseMemeWebServer.Application.Exceptions;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace ChooseMemeWebServer.Application.Common.WebSocket
@@ -14,13 +15,39 @@ namespace ChooseMemeWebServer.Application.Common.WebSocket
     public class PlayerRequestMessage : WebSocketMessage
     {
         [JsonIgnore]
-        public PlayerRequestMessageType Type { get => (PlayerRequestMessageType)Enum.Parse(typeof(PlayerRequestMessageType), MessageTypeName); }
+        public PlayerRequestMessageType Type
+        {
+            get
+            {
+                try
+                {
+                    return (PlayerRequestMessageType)Enum.Parse(typeof(PlayerRequestMessageType), MessageTypeName);
+                }
+                catch (ArgumentException)
+                {
+                    throw new ExpectedException("Unexisted player request message type");
+                }
+            }
+        }
     }
 
     public class ServerRequestMessage : WebSocketMessage
     {
         [JsonIgnore]
-        public ServerRequestMessageType Type { get => (ServerRequestMessageType)Enum.Parse(typeof(ServerRequestMessageType), MessageTypeName); }
+        public ServerRequestMessageType Type
+        {
+            get
+            {
+                try
+                {
+                    return (ServerRequestMessageType)Enum.Parse(typeof(ServerRequestMessageType), MessageTypeName);
+                }
+                catch (ArgumentException)
+                {
+                    throw new ExpectedException("Unexisted player request message type");
+                }
+            }
+        }
     }
 
     public class WebSocketResponseMessage : WebSocketMessage
@@ -57,6 +84,8 @@ namespace ChooseMemeWebServer.Application.Common.WebSocket
         LobbyCodeIsNullOrEmpty,
         CantFindLobby,
         LobbyAlreadyHaveServer,
+
+        ExpectedError,
 
         OnCreateLobby,
         OnLobbyClose,

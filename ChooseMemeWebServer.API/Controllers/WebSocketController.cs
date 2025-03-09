@@ -1,4 +1,5 @@
 ﻿using ChooseMemeWebServer.Application.Common.WebSocket;
+using ChooseMemeWebServer.Application.DTO;
 using ChooseMemeWebServer.Application.Exceptions;
 using ChooseMemeWebServer.Application.Interfaces;
 using ChooseMemeWebServer.Application.Models;
@@ -12,7 +13,7 @@ using System.Text.Json;
 namespace ChooseMemeWebServer.API.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    public class WebSocketController(IWebSocketConnectionService connectionService, IPlayerService playerService,
+    public class WebSocketController(IWebSocketConnectionService connectionService, IWebSocketSenderService senderService, IPlayerService playerService,
         IWebSocketRequestService requestService, ILobbyService lobbyService, IServerService serverService, IConfiguration configuration) : ControllerBase
     {
         [Route("/wsPlayer")]
@@ -65,17 +66,20 @@ namespace ChooseMemeWebServer.API.Controllers
 
         private async Task ListenPlayer(WebSocket webSocket, Player player, Lobby lobby)
         {
-            while (!webSocket.CloseStatus.HasValue)
+            while (webSocket.State == WebSocketState.Open)
             {
-                var receiveResult = await webSocket.ReadDataFromWebSocket();
-
-                if (receiveResult.MessageType == BetterWebSocketMessageType.Close)
-                {
-                    continue;
-                }
+                string json = "";
 
                 try
                 {
+                    var receiveResult = await webSocket.ReadDataFromWebSocket();
+                    json = receiveResult.Message;
+
+                    if (receiveResult.MessageType == BetterWebSocketMessageType.Close)
+                    {
+                        continue;
+                    }
+
                     var message = JsonSerializer.Deserialize<PlayerRequestMessage>(receiveResult.Message);
 
                     if (message == null)
@@ -87,11 +91,22 @@ namespace ChooseMemeWebServer.API.Controllers
                 }
                 catch (JsonException ex)
                 {
-                    Console.WriteLine("Json: " + ex.ToString());
+                    Console.WriteLine("Json error: " + json);
+                    Console.WriteLine(ex.ToString());
                 }
                 catch (ExpectedException ex)
                 {
+                    var message = new MessageDTO()
+                    {
+                        Message = ex.Message.ToString()
+                    };
+                    var payload = new WebSocketResponseMessage(WebSocketMessageResponseType.ExpectedError, message);
+                    await senderService.SendMessageToPlayer(player, payload);
                     Console.WriteLine("Expected: " + ex.ToString());
+                }
+                catch (WebSocketException)
+                {
+                    continue;
                 }
                 catch (Exception ex)
                 {
@@ -99,10 +114,13 @@ namespace ChooseMemeWebServer.API.Controllers
                 }
             }
 
-            await webSocket.CloseAsync(
-                webSocket.CloseStatus.Value,
-                webSocket.CloseStatusDescription,
-                CancellationToken.None);
+            if (webSocket.State == WebSocketState.Open || webSocket.State == WebSocketState.CloseReceived || webSocket.State == WebSocketState.CloseSent)
+            {
+                await webSocket.CloseAsync(
+                    WebSocketCloseStatus.NormalClosure,
+                    webSocket.CloseStatusDescription,
+                    CancellationToken.None);
+            }
         }
 
         [Route("/wsServer")]
@@ -155,17 +173,20 @@ namespace ChooseMemeWebServer.API.Controllers
 
         private async Task ListenServer(WebSocket webSocket, Server server, Lobby lobby)
         {
-            while (!webSocket.CloseStatus.HasValue)
+            while (webSocket.State == WebSocketState.Open)
             {
-                var receiveResult = await webSocket.ReadDataFromWebSocket();
-
-                if (receiveResult.MessageType == BetterWebSocketMessageType.Close)
-                {
-                    continue;
-                }
+                string json = "";
 
                 try
                 {
+                    var receiveResult = await webSocket.ReadDataFromWebSocket();
+                    json = receiveResult.Message;
+
+                    if (receiveResult.MessageType == BetterWebSocketMessageType.Close)
+                    {
+                        continue;
+                    }
+
                     var message = JsonSerializer.Deserialize<ServerRequestMessage>(receiveResult.Message);
 
                     if (message == null)
@@ -177,11 +198,22 @@ namespace ChooseMemeWebServer.API.Controllers
                 }
                 catch (JsonException ex)
                 {
-                    Console.WriteLine("Json: " + ex.ToString());
+                    Console.WriteLine("Json error: " + json);
+                    Console.WriteLine(ex.ToString());
                 }
                 catch (ExpectedException ex)
                 {
+                    var message = new MessageDTO()
+                    {
+                        Message = ex.Message.ToString()
+                    };
+                    var payload = new WebSocketResponseMessage(WebSocketMessageResponseType.ExpectedError, message);
+                    await senderService.SendMessageToServer(server, payload);
                     Console.WriteLine("Expected: " + ex.ToString());
+                }
+                catch (WebSocketException)
+                {
+                    continue;
                 }
                 catch (Exception ex)
                 {
@@ -189,10 +221,13 @@ namespace ChooseMemeWebServer.API.Controllers
                 }
             }
 
-            await webSocket.CloseAsync(
-                webSocket.CloseStatus.Value,
-                webSocket.CloseStatusDescription,
-                CancellationToken.None);
+            if (webSocket.State == WebSocketState.Open || webSocket.State == WebSocketState.CloseReceived || webSocket.State == WebSocketState.CloseSent)
+            {
+                await webSocket.CloseAsync(
+                    WebSocketCloseStatus.NormalClosure,
+                    webSocket.CloseStatusDescription,
+                    CancellationToken.None);
+            }
         }
     }
 }
