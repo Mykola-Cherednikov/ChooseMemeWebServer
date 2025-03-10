@@ -9,11 +9,11 @@ namespace ChooseMemeWebServer.Infrastructure.Services
 {
     public class WebSocketSenderService : IWebSocketSenderService
     {
-        private readonly IWebSocketConnectionService _connectionService;
+        private readonly IWebSocketConnectionService connectionService;
 
         public WebSocketSenderService(IWebSocketConnectionService connectionManager)
         {
-            _connectionService = connectionManager;
+            connectionService = connectionManager;
         }
 
         public async Task SendMessageBroadcast(Lobby lobby, WebSocketResponseMessage payload)
@@ -44,7 +44,7 @@ namespace ChooseMemeWebServer.Infrastructure.Services
                     return;
                 }
 
-                if (!_connectionService.TryGetPlayerConnection(player, out var playerWebSocket))
+                if (!connectionService.TryGetPlayerConnection(player, out var playerWebSocket))
                 {
                     throw new CannotGetPlayerConnectionException(player.Username);
                 }
@@ -65,7 +65,7 @@ namespace ChooseMemeWebServer.Infrastructure.Services
         {
             try
             {
-                if (server == null || !_connectionService.TryGetServerConnection(server, out var serverWebSocket))
+                if (server == null || !connectionService.TryGetServerConnection(server, out var serverWebSocket))
                 {
                     throw new CannotGetServerConnectionException();
                 }

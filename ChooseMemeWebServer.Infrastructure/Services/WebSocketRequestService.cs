@@ -15,14 +15,14 @@ namespace ChooseMemeWebServer.Infrastructure.Services
 {
     public class WebSocketRequestService(IServiceProvider provider) : IWebSocketRequestService
     {
-        private static Dictionary<PlayerRequestMessageType, CallInfo> _playerRequestToCallInfoCache = new()
+        private static Dictionary<PlayerRequestMessageType, CallInfo> playerRequestToCallInfoCache = new()
         {
             { PlayerRequestMessageType.StartGame, new CallInfo(typeof(ILobbyService), "StartGame", typeof(StartGameRequestDTO)) },
             { PlayerRequestMessageType.PlayerIsReady, new CallInfo(typeof(IPlayerService), "SetPlayerIsReady", typeof(SetPlayerIsReadyRequestDTO)) },
             { PlayerRequestMessageType.ChooseMedia, new CallInfo(typeof(IPlayerService), "ChooseMedia", typeof(ChooseMediaRequestDTO)) }
         };
 
-        private static Dictionary<ServerRequestMessageType, CallInfo> _serverRequestToCallInfoCache = new()
+        private static Dictionary<ServerRequestMessageType, CallInfo> serverRequestToCallInfoCache = new()
         {
             { ServerRequestMessageType.NextStatus, new CallInfo(typeof(ILobbyService), "NextStatus", typeof(NextStatusRequestDTO)) }
         };
@@ -31,7 +31,7 @@ namespace ChooseMemeWebServer.Infrastructure.Services
         {
             using (var scope = provider.CreateScope())
             {
-                if (!_playerRequestToCallInfoCache.TryGetValue(message.Type, out var callInfo))
+                if (!playerRequestToCallInfoCache.TryGetValue(message.Type, out var callInfo))
                 {
                     throw new CallInfoNotFoundException(message.MessageTypeName);
 
@@ -69,7 +69,7 @@ namespace ChooseMemeWebServer.Infrastructure.Services
         {
             using (var scope = provider.CreateScope())
             {
-                if (!_serverRequestToCallInfoCache.TryGetValue(message.Type, out var callInfo))
+                if (!serverRequestToCallInfoCache.TryGetValue(message.Type, out var callInfo))
                 {
                     throw new CallInfoNotFoundException(message.MessageTypeName);
                 }

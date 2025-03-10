@@ -80,7 +80,7 @@ namespace ChooseMemeWebServer.Application.Common.WebSocket
 
     public enum WebSocketMessageResponseType
     {
-        UserNameIsNullOrEmpty,
+        UsernameIsNullOrEmpty,
         LobbyCodeIsNullOrEmpty,
         CantFindLobby,
         LobbyAlreadyHaveServer,

@@ -25,7 +25,7 @@ namespace ChooseMemeWebServer.API.Controllers
 
                 if (string.IsNullOrEmpty(username))
                 {
-                    await webSocket.WriteDataToWebSocket(new WebSocketResponseMessage(WebSocketMessageResponseType.UserNameIsNullOrEmpty));
+                    await webSocket.WriteDataToWebSocket(new WebSocketResponseMessage(WebSocketMessageResponseType.UsernameIsNullOrEmpty));
                     throw new UsernameIsNullOrEmptyException();
 
                 }
