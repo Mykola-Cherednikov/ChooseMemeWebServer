@@ -58,9 +58,9 @@ namespace ChooseMemeWebServer.Application.Services
             return media;
         }
 
-        public async Task DeleteMedia(string id)
+        public async Task DeleteMedia(string mediaId)
         {
-            var media = await context.Medias.Include(m => m.Preset).FirstOrDefaultAsync(m => m.Id == id);
+            var media = await context.Medias.Include(m => m.Preset).FirstOrDefaultAsync(m => m.Id == mediaId);
 
             if (media == null)
             {
@@ -72,6 +72,25 @@ namespace ChooseMemeWebServer.Application.Services
             context.Medias.Remove(media);
 
             await context.SaveChangesAsync();
+        }
+
+        public async Task<List<Media>> GetAllMedia(string presetId)
+        {
+            var mediaList = await context.Medias.Include(m => m.Preset).Where(m => m.Preset.Id == presetId).ToListAsync() ?? new();
+
+            return mediaList;
+        }
+
+        public async Task<Media> GetOneMedia(string presetId, string mediaId)
+        {
+            var media = await context.Medias.Include(m => m.Preset).FirstOrDefaultAsync(m => m.Preset.Id == presetId && m.Id == mediaId);
+
+            if (media == null)
+            {
+                throw new MediaNotFoundException();
+            }
+
+            return media;
         }
     }
 }

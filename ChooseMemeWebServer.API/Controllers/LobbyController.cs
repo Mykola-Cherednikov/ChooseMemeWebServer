@@ -25,7 +25,7 @@ namespace ChooseMemeWebServer.API.Controllers
             }
             catch (ExpectedException ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new MessageDTO() { Message = ex.Message });
             }
         }
 
