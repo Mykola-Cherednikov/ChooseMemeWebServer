@@ -6,6 +6,10 @@ namespace ChooseMemeWebServer.Infrastructure
 {
     public class NpgsqlContext : DbContext, IDbContext
     {
+        public NpgsqlContext(DbContextOptions<NpgsqlContext> options) : base(options)
+        {
+        }
+
         public DbSet<Media> Medias { get; set; } = null!;
 
         public DbSet<Preset> Presets { get; set; } = null!;

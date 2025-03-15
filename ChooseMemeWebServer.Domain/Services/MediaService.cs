@@ -81,9 +81,9 @@ namespace ChooseMemeWebServer.Application.Services
             return mediaList;
         }
 
-        public async Task<Media> GetOneMedia(string presetId, string mediaId)
+        public async Task<Media> GetOneMedia(string mediaId)
         {
-            var media = await context.Medias.Include(m => m.Preset).FirstOrDefaultAsync(m => m.Preset.Id == presetId && m.Id == mediaId);
+            var media = await context.Medias.FirstOrDefaultAsync(m => m.Id == mediaId);
 
             if (media == null)
             {

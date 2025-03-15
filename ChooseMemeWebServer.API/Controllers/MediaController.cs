@@ -8,12 +8,25 @@ namespace ChooseMemeWebServer.API.Controllers
 {
     public class MediaController(IMediaService mediaService, IMapper mapper) : ControllerBase
     {
-        [HttpGet("GetMedia")]
+        [HttpGet("GetAllMedia")]
         public async Task<IActionResult> GetAllMedia(string presetid)
         {
             try
             {
                 return Ok(mapper.Map<List<MediaDTO>>(await mediaService.GetAllMedia(presetid)));
+            }
+            catch (ExpectedException ex)
+            {
+                return BadRequest(new MessageDTO() { Message = ex.Message });
+            }
+        }
+
+        [HttpGet("GetOneMedia")]
+        public async Task<IActionResult> GetOneMedia(string mediaId)
+        {
+            try
+            {
+                return Ok(mapper.Map<MediaDTO>(await mediaService.GetOneMedia(mediaId)));
             }
             catch (ExpectedException ex)
             {

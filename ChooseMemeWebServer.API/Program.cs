@@ -2,8 +2,10 @@ using ChooseMemeWebServer.API;
 using ChooseMemeWebServer.Application.Common.Mappings;
 using ChooseMemeWebServer.Application.Interfaces;
 using ChooseMemeWebServer.Application.Services;
+using ChooseMemeWebServer.Core;
+using ChooseMemeWebServer.Infrastructure;
 using ChooseMemeWebServer.Infrastructure.Services;
-using ChooseMemeWebServer.Infrastructure.TestServices;
+using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace ChooseMemeWebServer
@@ -18,15 +20,19 @@ namespace ChooseMemeWebServer
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddDbContext<IDbContext, NpgsqlContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DBContext"), npgoptions => npgoptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
+
+            builder.Services.AddScoped<IDataService, DataService>();
+            builder.Services.AddScoped<IHelperService, HelperService>();
             builder.Services.AddScoped<ILobbyService, LobbyService>();
+            builder.Services.AddScoped<IMediaService, MediaService>();
             builder.Services.AddScoped<IPlayerService, PlayerService>();
+            builder.Services.AddScoped<IPresetService, PresetService>();
+            builder.Services.AddScoped<IServerService, ServerService>();
+
             builder.Services.AddScoped<IWebSocketSenderService, WebSocketSenderService>();
             builder.Services.AddScoped<IWebSocketConnectionService, WebSocketConnectionService>();
             builder.Services.AddScoped<IWebSocketRequestService, WebSocketRequestService>();
-            builder.Services.AddScoped<IServerService, ServerService>();
-            builder.Services.AddScoped<IHelperService, HelperService>();
-            //builder.Services.AddScoped<IMediaService, MediaService>();
-            builder.Services.AddScoped<IPresetService, PresetTestService>();
 
             builder.Services.AddAutoMapper(config =>
             {
