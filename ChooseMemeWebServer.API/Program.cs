@@ -30,6 +30,7 @@ namespace ChooseMemeWebServer
             builder.Services.AddScoped<IPresetService, PresetService>();
             builder.Services.AddScoped<IServerService, ServerService>();
 
+            builder.Services.AddScoped<IFeatureService, FeatureService>();
             builder.Services.AddScoped<IWebSocketSenderService, WebSocketSenderService>();
             builder.Services.AddScoped<IWebSocketConnectionService, WebSocketConnectionService>();
             builder.Services.AddScoped<IWebSocketRequestService, WebSocketRequestService>();

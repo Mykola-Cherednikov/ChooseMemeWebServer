@@ -17,6 +17,19 @@ namespace ChooseMemeWebServer.API.Controllers
             this.mapper = mapper;
         }
 
+        [HttpGet("GetPresets")]
+        public async Task<IActionResult> GetPresets()
+        {
+            try
+            {
+                return Ok(mapper.Map<List<PresetDTO>>(await presetService.GetPresets()));
+            }
+            catch (ExpectedException ex)
+            {
+                return BadRequest(new MessageDTO() { Message = ex.Message });
+            }
+        }
+
         [HttpGet("GetPreset")]
         public async Task<IActionResult> GetPreset(string id)
         {

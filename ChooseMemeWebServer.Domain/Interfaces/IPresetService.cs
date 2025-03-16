@@ -6,6 +6,8 @@ namespace ChooseMemeWebServer.Application.Interfaces
     {
         public Task<Preset> CreatePreset(string name);
 
+        public Task<IList<Preset>> GetPresets();
+
         public Task<Preset> GetPreset(string id);
 
         public void DeletePreset(string id);

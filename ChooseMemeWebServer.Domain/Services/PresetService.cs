@@ -23,6 +23,19 @@ namespace ChooseMemeWebServer.Application.Services
             return preset;
         }
 
+        public async Task<IList<Preset>> GetPresets()
+        {
+            var presets = await context.Presets.Include(p => p.Media).Include(p => p.Questions).AsNoTracking().ToListAsync();
+
+            if (presets == null)
+            {
+                throw new PresetNotFoundException();
+            }
+
+            return presets;
+        }
+
+
         public async Task<Preset> GetPreset(string id)
         {
             var preset = await context.Presets.Include(p => p.Media).Include(p => p.Questions).AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);

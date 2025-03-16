@@ -11,24 +11,26 @@ namespace ChooseMemeWebServer.Application.Services
     {
         public async Task<Media> CreateMedia(IFormFile file, string presetId)
         {
-            if (!dataService.GetAllowedFormats().Contains(Path.GetExtension(file.FileName)))
+            var extension = Path.GetExtension(file.FileName);
+
+            if (!dataService.GetAllowedExtensions().Contains(extension))
             {
-                throw new MediaNotAllowedFormatException(file.FileName);
+                throw new MediaNotAllowedExtensionException(file.FileName);
             }
 
             if (file.Length / 1_048_576 > 10) // Move to config
             {
                 throw new MediaFileSizeException(file.Length);
-
 			}
 
-            var fileName = file.FileName.Substring(0, Math.Min(40, file.FileName.Length));
+            var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.FileName);
+            var fileName = fileNameWithoutExtension.Substring(0, Math.Min(40, fileNameWithoutExtension.Length)) + extension;
 
             var filePath = Path.Combine(dataService.GetPresetFolderPath(), presetId, fileName);
 
             if (Path.Exists(filePath))
             {
-                throw new MediaAlreadyExistsException(filePath);
+                throw new MediaAlreadyExistsException();
             }
 
             var preset = await context.Presets.FirstOrDefaultAsync(p => p.Id == presetId);
@@ -36,7 +38,6 @@ namespace ChooseMemeWebServer.Application.Services
             if (preset == null)
             {
                 throw new MediaPresetNotFoundException();
-
 			}
 
             var media = new Media()
@@ -45,6 +46,8 @@ namespace ChooseMemeWebServer.Application.Services
                 FileName = fileName,
                 Preset = preset
             };
+
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
 
             using (var savedFile = new FileStream(filePath, FileMode.Create))
             {

@@ -118,5 +118,10 @@ namespace ChooseMemeWebServer.Infrastructure.TestServices
 
             return preset;
         }
+
+        public Task<IList<Preset>> GetPresets()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

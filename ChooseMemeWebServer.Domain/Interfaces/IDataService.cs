@@ -2,7 +2,7 @@
 {
     public interface IDataService
     {
-        public List<string> GetAllowedFormats();
+        public List<string> GetAllowedExtensions();
 
         public string GetPresetFolderPath();
     }

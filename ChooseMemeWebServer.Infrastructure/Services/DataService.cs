@@ -4,9 +4,9 @@ namespace ChooseMemeWebServer.Infrastructure.Services
 {
     public class DataService : IDataService
     {
-        private List<string> AllowedFormats = new List<string>() { "mp4", "jpg", "png" };
+        private List<string> AllowedFormats = new List<string>() { ".mp4", ".jpg", ".png", ".gif" };
 
-        public List<string> GetAllowedFormats()
+        public List<string> GetAllowedExtensions()
         {
             return AllowedFormats;
         }
