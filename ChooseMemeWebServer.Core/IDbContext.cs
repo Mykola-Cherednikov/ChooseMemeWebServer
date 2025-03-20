@@ -5,6 +5,8 @@ namespace ChooseMemeWebServer.Core
 {
     public interface IDbContext
     {
+        public DbSet<User> Users { get; set; }
+
         public DbSet<Media> Medias { get; set; }
 
         public DbSet<Preset> Presets { get; set; }

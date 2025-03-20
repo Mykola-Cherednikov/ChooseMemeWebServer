@@ -6,17 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ChooseMemeWebServer.API.Controllers
 {
-    public class PresetController : ControllerBase
+    public class PresetController(IPresetService presetService, IMapper mapper) : ControllerBase
     {
-        private readonly IPresetService presetService;
-        private readonly IMapper mapper;
-
-        public PresetController(IPresetService presetService, IMapper mapper)
-        {
-            this.presetService = presetService;
-            this.mapper = mapper;
-        }
-
         [HttpGet("GetPresets")]
         public async Task<IActionResult> GetPresets()
         {

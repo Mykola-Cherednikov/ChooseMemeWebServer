@@ -7,15 +7,8 @@ using System.Net.WebSockets;
 
 namespace ChooseMemeWebServer.Infrastructure.Services
 {
-    public class WebSocketSenderService : IWebSocketSenderService
+    public class WebSocketSenderService(IWebSocketConnectionService connectionService) : IWebSocketSenderService
     {
-        private readonly IWebSocketConnectionService connectionService;
-
-        public WebSocketSenderService(IWebSocketConnectionService connectionManager)
-        {
-            connectionService = connectionManager;
-        }
-
         public async Task SendMessageBroadcast(Lobby lobby, WebSocketResponseMessage payload)
         {
             await SendMessageToServer(lobby.Server, payload);

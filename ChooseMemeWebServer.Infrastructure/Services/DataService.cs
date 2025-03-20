@@ -1,6 +1,5 @@
 ﻿using ChooseMemeWebServer.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
-using System.Reflection;
 
 namespace ChooseMemeWebServer.Infrastructure.Services
 {
@@ -10,7 +9,7 @@ namespace ChooseMemeWebServer.Infrastructure.Services
 
         public List<string> GetAllowedExtensions()
         {
-            if(AllowedExtensions == null)
+            if (AllowedExtensions == null)
             {
                 AllowedExtensions = new List<string>((configuration.GetSection("AllowedExtensions").Value ?? "").Split(";"));
             }

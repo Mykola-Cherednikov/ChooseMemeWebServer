@@ -9,7 +9,6 @@ using ChooseMemeWebServer.Core.Entities;
 using ChooseMemeWebServer.Core.Exceptions.LobbyExceptions;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Concurrent;
-using System.Numerics;
 using System.Reflection;
 using System.Text;
 
@@ -98,7 +97,7 @@ namespace ChooseMemeWebServer.Application.Services
 
         public Lobby GetLobby(string code)
         {
-            if(!activeLobbies.TryGetValue(code, out var lobby))
+            if (!activeLobbies.TryGetValue(code, out var lobby))
             {
                 throw new LobbyNotFoundException(code);
             }

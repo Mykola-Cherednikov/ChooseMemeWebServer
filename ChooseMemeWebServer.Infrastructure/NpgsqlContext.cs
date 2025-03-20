@@ -10,10 +10,12 @@ namespace ChooseMemeWebServer.Infrastructure
         {
         }
 
-        public DbSet<Media> Medias { get; set; } = null!;
+        public DbSet<Media> Medias { get; set; }
 
-        public DbSet<Preset> Presets { get; set; } = null!;
+        public DbSet<Preset> Presets { get; set; }
 
-        public DbSet<Question> Questions { get; set; } = null!;
+        public DbSet<Question> Questions { get; set; }
+
+        public DbSet<User> Users { get; set; }
     }
 }
