@@ -23,8 +23,7 @@ namespace ChooseMemeWebServer.Application.Services
                 throw new MediaFileSizeException(file.Length);
 			}
 
-            var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.FileName);
-            var fileName = fileNameWithoutExtension.Substring(0, Math.Min(40, fileNameWithoutExtension.Length)) + extension;
+            var fileName = CleanFileName(Path.GetFileNameWithoutExtension(file.FileName), extension);
 
             var filePath = Path.Combine(dataService.GetPresetFolderPath(), presetId, fileName);
 
@@ -37,7 +36,7 @@ namespace ChooseMemeWebServer.Application.Services
 
             if (preset == null)
             {
-                throw new MediaPresetNotFoundException();
+                throw new PresetNotFoundException();
 			}
 
             var media = new Media()
@@ -61,6 +60,15 @@ namespace ChooseMemeWebServer.Application.Services
             return media;
         }
 
+        private string CleanFileName(string fileName, string extension)
+        {
+            char[] allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-".ToCharArray();
+            string cleanedFileName = new string(fileName.Where(c => allowedChars.Contains(c)).ToArray());
+            cleanedFileName = cleanedFileName.Substring(0, Math.Min(40, cleanedFileName.Length)) + extension;
+
+            return cleanedFileName;
+        }
+
         public async Task DeleteMedia(string mediaId)
         {
             var media = await context.Medias.Include(m => m.Preset).FirstOrDefaultAsync(m => m.Id == mediaId);
@@ -79,9 +87,14 @@ namespace ChooseMemeWebServer.Application.Services
 
         public async Task<List<Media>> GetAllMedia(string presetId)
         {
-            var mediaList = await context.Medias.Include(m => m.Preset).Where(m => m.Preset.Id == presetId).ToListAsync() ?? new();
+            var preset = await context.Presets.Include(p => p.Media).FirstOrDefaultAsync(p => p.Id == presetId);
 
-            return mediaList;
+            if(preset == null)
+            {
+                throw new PresetNotFoundException();
+            }
+
+            return preset.Media;
         }
 
         public async Task<Media> GetOneMedia(string mediaId)

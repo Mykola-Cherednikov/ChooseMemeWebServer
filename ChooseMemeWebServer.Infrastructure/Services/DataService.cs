@@ -1,19 +1,26 @@
 ﻿using ChooseMemeWebServer.Application.Interfaces;
+using Microsoft.Extensions.Configuration;
+using System.Reflection;
 
 namespace ChooseMemeWebServer.Infrastructure.Services
 {
-    public class DataService : IDataService
+    public class DataService(IConfiguration configuration) : IDataService
     {
-        private List<string> AllowedFormats = new List<string>() { ".mp4", ".jpg", ".png", ".gif" };
+        private static List<string>? AllowedExtensions;
 
         public List<string> GetAllowedExtensions()
         {
-            return AllowedFormats;
+            if(AllowedExtensions == null)
+            {
+                AllowedExtensions = new List<string>((configuration.GetSection("AllowedExtensions").Value ?? "").Split(";"));
+            }
+
+            return AllowedExtensions;
         }
 
         public string GetPresetFolderPath()
         {
-            return Path.Combine(Directory.GetCurrentDirectory(), "Presets");
+            return configuration.GetSection("PresetsPath").Value ?? "C:/Presets";
         }
     }
 }

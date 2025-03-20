@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace ChooseMemeWebServer.Core.Exceptions.MediaExceptions
 {
-    public class MediaPresetNotFoundException : ExpectedException
+    public class PresetNotFoundException : ExpectedException
     {
-		public MediaPresetNotFoundException() : base("Media present not found")
+		public PresetNotFoundException() : base("Preset not found")
 		{
 		}
 	}

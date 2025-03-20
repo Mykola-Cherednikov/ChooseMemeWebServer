@@ -6,6 +6,7 @@ using ChooseMemeWebServer.Core;
 using ChooseMemeWebServer.Infrastructure;
 using ChooseMemeWebServer.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using System.Reflection;
 
 namespace ChooseMemeWebServer
@@ -48,6 +49,18 @@ namespace ChooseMemeWebServer
 
             app.UseSwagger();
             app.UseSwaggerUI();
+
+            var presetsFolder = builder.Configuration.GetSection("PresetsPath").Value ?? "C:/Presets";
+            if (!Directory.Exists(presetsFolder))
+            {
+                Directory.CreateDirectory(presetsFolder);
+            }
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(presetsFolder),
+                RequestPath = "/Presets"
+            });
 
             app.InitData().GetAwaiter().GetResult();
             app.Run();
