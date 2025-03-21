@@ -4,6 +4,7 @@ using ChooseMemeWebServer.Application.Interfaces;
 using ChooseMemeWebServer.Application.Services;
 using ChooseMemeWebServer.Core;
 using ChooseMemeWebServer.Infrastructure;
+using ChooseMemeWebServer.Infrastructure.Options;
 using ChooseMemeWebServer.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -24,20 +25,34 @@ namespace ChooseMemeWebServer
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddDbContext<IDbContext, NpgsqlContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DBContext"), npgoptions => npgoptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
+            builder.Services.AddDbContext<IDbContext, NpgsqlContext>(
+                options => options.UseNpgsql(builder.Configuration.GetConnectionString("DBContext"),
+                npgoptions =>
+                {
+                    npgoptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                }
+            ));
 
-            builder.Services.AddScoped<IDataService, DataService>();
+            builder.Services.Configure<DataOptions>(builder.Configuration.GetSection(DataOptions.SectionName));
+            builder.Services.Configure<JWTOptions>(builder.Configuration.GetSection(JWTOptions.SectionName));
+
+            builder.Services.AddSingleton<IDataService, DataService>();
+
             builder.Services.AddScoped<IHelperService, HelperService>();
             builder.Services.AddScoped<ILobbyService, LobbyService>();
             builder.Services.AddScoped<IMediaService, MediaService>();
             builder.Services.AddScoped<IPlayerService, PlayerService>();
             builder.Services.AddScoped<IPresetService, PresetService>();
             builder.Services.AddScoped<IServerService, ServerService>();
+            builder.Services.AddScoped<IUserService, UserService>();
 
             builder.Services.AddScoped<IFeatureService, FeatureService>();
             builder.Services.AddScoped<IWebSocketSenderService, WebSocketSenderService>();
             builder.Services.AddScoped<IWebSocketConnectionService, WebSocketConnectionService>();
             builder.Services.AddScoped<IWebSocketRequestService, WebSocketRequestService>();
+
+            builder.Services.AddScoped<IHashService, HashService>();
+            builder.Services.AddScoped<ITokenService, JWTTokenService>();
 
             builder.Services.AddAutoMapper(config =>
             {
@@ -71,7 +86,7 @@ namespace ChooseMemeWebServer
             app.UseSwagger();
             app.UseSwaggerUI();
 
-            var presetsFolder = builder.Configuration.GetSection("PresetsPath").Value ?? "C:/Presets";
+            var presetsFolder = builder.Configuration.GetRequiredSection("Data").GetRequiredSection("PresetsPath").Value ?? "C:/Presets";
             if (!Directory.Exists(presetsFolder))
             {
                 Directory.CreateDirectory(presetsFolder);

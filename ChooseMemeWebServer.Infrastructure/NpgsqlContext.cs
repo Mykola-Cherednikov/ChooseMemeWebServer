@@ -10,6 +10,11 @@ namespace ChooseMemeWebServer.Infrastructure
         {
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(User).Assembly);
+        }
+
         public DbSet<Media> Medias { get; set; }
 
         public DbSet<Preset> Presets { get; set; }

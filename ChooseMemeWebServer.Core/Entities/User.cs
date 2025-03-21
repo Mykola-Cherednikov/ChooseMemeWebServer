@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations;
 
 namespace ChooseMemeWebServer.Core.Entities
 {
@@ -9,8 +11,16 @@ namespace ChooseMemeWebServer.Core.Entities
 
         public string Username { get; set; } = string.Empty;
 
-        public string HashPassword { get; set; } = string.Empty;
+        public string HashedPassword { get; set; } = string.Empty;
 
         public List<Preset> Presets { get; set; } = null!;
+    }
+
+    public class UserConfiguration : IEntityTypeConfiguration<User>
+    {
+        public void Configure(EntityTypeBuilder<User> builder)
+        {
+            builder.HasIndex(p => p.Username).IsUnique();
+        }
     }
 }
