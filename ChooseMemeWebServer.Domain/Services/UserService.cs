@@ -1,36 +1,35 @@
-﻿using ChooseMemeWebServer.Application.Interfaces;
+﻿using ChooseMemeWebServer.Application.DTO.UserService.Request;
+using ChooseMemeWebServer.Application.DTO.UserService.Response;
+using ChooseMemeWebServer.Application.Interfaces;
 using ChooseMemeWebServer.Core;
 using ChooseMemeWebServer.Core.Entities;
 using ChooseMemeWebServer.Core.Exceptions.UserExceptions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System.Security.Claims;
-using System.Text;
 
 namespace ChooseMemeWebServer.Application.Services
 {
     public class UserService(IDbContext context, IHashService hashService, ITokenService tokenService) : IUserService
     {
-        public async Task<string> Login(string username, string password)
+        public async Task<UserResponseDTO> Login(UserRequestDTO data)
         {
-            var user = await context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            var user = await context.Users.FirstOrDefaultAsync(u => u.Username == data.Username);
 
             if (user == null)
             {
                 throw new UserNotFoundException();
             }
 
-            if (!hashService.VerifyPassword(password, user.HashedPassword))
+            if (!hashService.VerifyPassword(data.Password, user.HashedPassword))
             {
                 throw new UserNotFoundException();
             }
 
-            return tokenService.GenerateToken(user);
+            return new UserResponseDTO() { Token = tokenService.GenerateToken(user) };
         }
 
-        public async Task<string> Register(string username, string password)
+        public async Task<UserResponseDTO> Register(UserRequestDTO data)
         {
-            var isUserExists = await context.Users.CountAsync(u => u.Username == username) == 1;
+            var isUserExists = await context.Users.CountAsync(u => u.Username == data.Username) == 1;
 
             if (isUserExists)
             {
@@ -39,15 +38,15 @@ namespace ChooseMemeWebServer.Application.Services
 
             var user = new User()
             {
-                Username = username,
-                HashedPassword = hashService.HashPassword(password)
+                Username = data.Username,
+                HashedPassword = hashService.HashPassword(data.Password)
             };
 
             await context.Users.AddAsync(user);
 
             await context.SaveChangesAsync();
 
-            return tokenService.GenerateToken(user);
+            return new UserResponseDTO() { Token = tokenService.GenerateToken(user) };
         }
     }
 }

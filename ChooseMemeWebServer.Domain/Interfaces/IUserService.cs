@@ -1,11 +1,12 @@
-﻿using ChooseMemeWebServer.Core.Entities;
+﻿using ChooseMemeWebServer.Application.DTO.UserService.Request;
+using ChooseMemeWebServer.Application.DTO.UserService.Response;
 
 namespace ChooseMemeWebServer.Application.Interfaces
 {
     public interface IUserService
     {
-        public Task<string> Login(string username, string password);
+        public Task<UserResponseDTO> Login(UserRequestDTO data);
 
-        public Task<string> Register(string username, string password);
+        public Task<UserResponseDTO> Register(UserRequestDTO data);
     }
 }
