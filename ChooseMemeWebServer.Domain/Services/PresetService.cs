@@ -6,14 +6,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ChooseMemeWebServer.Application.Services
 {
-    public class PresetService(IDbContext context) : IPresetService
+    public class PresetService(IDbContext context, IUserService userService) : IPresetService
     {
-        public async Task<Preset> CreatePreset(string name)
+        public async Task<Preset> CreatePreset(string name, string userId)
         {
+            var user = await userService.GetUserById(userId);
+
             var preset = new Preset()
             {
                 Id = Guid.NewGuid().ToString(),
-                Name = name
+                Name = name,
+                User = user
             };
 
             await context.Presets.AddAsync(preset);

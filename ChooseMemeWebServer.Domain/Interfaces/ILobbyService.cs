@@ -1,5 +1,4 @@
-﻿using ChooseMemeWebServer.Application.DTO;
-using ChooseMemeWebServer.Application.DTO.LobbyService.Request;
+﻿using ChooseMemeWebServer.Application.DTO.LobbyService.Request;
 using ChooseMemeWebServer.Application.Models;
 
 namespace ChooseMemeWebServer.Application.Interfaces

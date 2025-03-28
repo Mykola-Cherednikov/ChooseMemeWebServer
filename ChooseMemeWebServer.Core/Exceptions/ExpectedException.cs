@@ -1,17 +1,15 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace ChooseMemeWebServer.Application.Exceptions
+﻿namespace ChooseMemeWebServer.Application.Exceptions
 {
-	public class ExpectedException : Exception
-	{
-		public ExpectedException(string message) : base(message)
-		{
-		}
+    public class ExpectedException : Exception
+    {
+        public ExpectedException(string message) : base(message)
+        {
+        }
 
-		public override string ToString()
-		{
-			return $"Message: {Message}\n" +
-				   $"StackTrace: {StackTrace}";
-		}
-	}
+        public override string ToString()
+        {
+            return $"Message: {Message}\n" +
+                   $"StackTrace: {StackTrace}";
+        }
+    }
 }

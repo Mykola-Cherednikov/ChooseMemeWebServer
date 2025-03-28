@@ -8,7 +8,6 @@ using ChooseMemeWebServer.Core.Exceptions.PlayerExceptions;
 using ChooseMemeWebServer.Core.Exceptions.ServerExceptions;
 using ChooseMemeWebServer.Core.Exceptions.WebSocketExceptions;
 using Microsoft.Extensions.DependencyInjection;
-using System.Numerics;
 using System.Text.Json;
 
 namespace ChooseMemeWebServer.Infrastructure.Services
@@ -35,7 +34,7 @@ namespace ChooseMemeWebServer.Infrastructure.Services
                 {
                     throw new CallInfoNotFoundException(message.MessageTypeName);
 
-				}
+                }
 
                 var classInstance = scope.ServiceProvider.GetService(callInfo.Class);
 
@@ -43,7 +42,7 @@ namespace ChooseMemeWebServer.Infrastructure.Services
                 {
                     throw new InstanceNotFoundException(callInfo.Class.Name);
 
-				}
+                }
 
                 var data = JsonSerializer.Deserialize(string.IsNullOrEmpty(message.WebSocketData) ? "{}" : message.WebSocketData, callInfo.DataType) as IPlayerWebSocketRequestData;
 
@@ -51,7 +50,7 @@ namespace ChooseMemeWebServer.Infrastructure.Services
                 {
                     throw new DataIsEmptyException();
 
-				}
+                }
 
                 data.Player = player;
                 data.Lobby = lobby;
@@ -109,7 +108,7 @@ namespace ChooseMemeWebServer.Infrastructure.Services
                 if (player == null)
                 {
                     throw new PlayerNotFoundException();
-				}
+                }
 
                 await HandlePlayerRequest(data.Message, player, player.Lobby);
             }
@@ -125,7 +124,7 @@ namespace ChooseMemeWebServer.Infrastructure.Services
                 {
                     throw new ServerNotFoundException();
 
-				}
+                }
 
                 await HandleServerRequest(data.Message, server, server.Lobby);
             }

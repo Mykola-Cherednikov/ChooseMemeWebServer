@@ -10,6 +10,32 @@ namespace ChooseMemeWebServer.Application.Services
 {
     public class UserService(IDbContext context, IHashService hashService, ITokenService tokenService) : IUserService
     {
+        public async Task<User> CreateUser(string userName, string password)
+        {
+            var user = new User()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Username = userName,
+                HashedPassword = hashService.HashPassword(password)
+            };
+
+            await context.Users.AddAsync(user);
+
+            await context.SaveChangesAsync();
+
+            return user;
+        }
+
+        public async Task<List<User>> GetAllUsers()
+        {
+            return await context.Users.ToListAsync();
+        }
+
+        public async Task<User> GetUserById(string id)
+        {
+            return await context.Users.FirstOrDefaultAsync(x => x.Id == id) ?? throw new UserNotFoundException();
+        }
+
         public async Task<UserResponseDTO> Login(UserRequestDTO data)
         {
             var user = await context.Users.FirstOrDefaultAsync(u => u.Username == data.Username);
@@ -36,15 +62,7 @@ namespace ChooseMemeWebServer.Application.Services
                 throw new UserAlreadyExistsException();
             }
 
-            var user = new User()
-            {
-                Username = data.Username,
-                HashedPassword = hashService.HashPassword(data.Password)
-            };
-
-            await context.Users.AddAsync(user);
-
-            await context.SaveChangesAsync();
+            User user = await CreateUser(data.Username, data.Password);
 
             return new UserResponseDTO() { Token = tokenService.GenerateToken(user) };
         }

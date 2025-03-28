@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ChooseMemeWebServer.Application.DTO.UserService.Request
+﻿namespace ChooseMemeWebServer.Application.DTO.UserService.Request
 {
     public class UserRequestDTO
     {

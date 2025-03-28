@@ -1,6 +1,5 @@
 ﻿using ChooseMemeWebServer.Application.DTO;
 using ChooseMemeWebServer.Application.DTO.UserService.Request;
-using ChooseMemeWebServer.Application.DTO.UserService.Response;
 using ChooseMemeWebServer.Application.Exceptions;
 using ChooseMemeWebServer.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;

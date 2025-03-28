@@ -19,7 +19,7 @@ namespace ChooseMemeWebServer.Application.Services
             return server;
         }
 
-        public void RemoveOnlineServer(Server server) 
+        public void RemoveOnlineServer(Server server)
         {
             onlineServers.Remove(server.Id);
         }

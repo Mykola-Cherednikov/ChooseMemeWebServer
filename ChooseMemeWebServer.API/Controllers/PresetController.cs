@@ -2,6 +2,7 @@
 using ChooseMemeWebServer.Application.DTO;
 using ChooseMemeWebServer.Application.Exceptions;
 using ChooseMemeWebServer.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChooseMemeWebServer.API.Controllers
@@ -35,11 +36,14 @@ namespace ChooseMemeWebServer.API.Controllers
         }
 
         [HttpPost("CreatePreset")]
+        [Authorize]
         public async Task<IActionResult> CreatePreset(string name)
         {
             try
             {
-                return Ok(mapper.Map<PresetDTO>(await presetService.CreatePreset(name)));
+                string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value ?? "";
+
+                return Ok(mapper.Map<PresetDTO>(await presetService.CreatePreset(name, userId)));
             }
             catch (ExpectedException ex)
             {

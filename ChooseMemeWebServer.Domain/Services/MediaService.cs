@@ -21,7 +21,7 @@ namespace ChooseMemeWebServer.Application.Services
             if (file.Length / 1_048_576 > 10) // Move to config
             {
                 throw new MediaFileSizeException(file.Length);
-			}
+            }
 
             var fileName = CleanFileName(Path.GetFileNameWithoutExtension(file.FileName), extension);
 
@@ -37,7 +37,7 @@ namespace ChooseMemeWebServer.Application.Services
             if (preset == null)
             {
                 throw new PresetNotFoundException();
-			}
+            }
 
             var media = new Media()
             {
@@ -89,7 +89,7 @@ namespace ChooseMemeWebServer.Application.Services
         {
             var preset = await context.Presets.Include(p => p.Media).FirstOrDefaultAsync(p => p.Id == presetId);
 
-            if(preset == null)
+            if (preset == null)
             {
                 throw new PresetNotFoundException();
             }

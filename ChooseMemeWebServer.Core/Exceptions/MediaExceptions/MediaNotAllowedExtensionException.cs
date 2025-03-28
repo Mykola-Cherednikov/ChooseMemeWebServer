@@ -1,17 +1,11 @@
 ﻿using ChooseMemeWebServer.Application.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChooseMemeWebServer.Core.Exceptions.MediaExceptions
 {
     public class MediaNotAllowedExtensionException : ExpectedException
     {
-		public MediaNotAllowedExtensionException(string path) : base($"Media format is not allowed: {path}")
-		{
-		}
-	}
+        public MediaNotAllowedExtensionException(string path) : base($"Media format is not allowed: {path}")
+        {
+        }
+    }
 }

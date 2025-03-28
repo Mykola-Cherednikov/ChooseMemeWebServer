@@ -2,6 +2,7 @@
 using ChooseMemeWebServer.Application.DTO;
 using ChooseMemeWebServer.Application.Exceptions;
 using ChooseMemeWebServer.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChooseMemeWebServer.API.Controllers
@@ -35,6 +36,7 @@ namespace ChooseMemeWebServer.API.Controllers
         }
 
         [HttpPost("CreateMedia")]
+        [Authorize]
         public async Task<IActionResult> CreateMedia(IFormFile file, string presetid)
         {
             try

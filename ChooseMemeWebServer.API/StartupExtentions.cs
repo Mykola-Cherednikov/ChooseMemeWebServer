@@ -1,5 +1,4 @@
 ﻿using ChooseMemeWebServer.Application.Interfaces;
-using ChooseMemeWebServer.Core;
 
 namespace ChooseMemeWebServer.API
 {
@@ -9,15 +8,22 @@ namespace ChooseMemeWebServer.API
         {
             using (var scope = webApplication.Services.CreateScope())
             {
-                var context = scope.ServiceProvider.GetRequiredService<IDbContext>();
                 var lobbyService = scope.ServiceProvider.GetRequiredService<ILobbyService>();
                 var presetService = scope.ServiceProvider.GetRequiredService<IPresetService>();
+                var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
 
-                var preset = context.Presets.FirstOrDefault();
+                var testUser = (await userService.GetAllUsers()).FirstOrDefault(u => u.Username == "TESTBOT");
+
+                if (testUser == null)
+                {
+                    testUser = await userService.CreateUser("TESTBOT", "TESTBOT");
+                }
+
+                var preset = (await presetService.GetPresets()).FirstOrDefault();
 
                 if (preset == null)
                 {
-                    preset = await presetService.CreatePreset("First");
+                    preset = await presetService.CreatePreset("First", testUser.Id);
                 }
 
                 var lobby = await lobbyService.CreateLobby(preset.Id);

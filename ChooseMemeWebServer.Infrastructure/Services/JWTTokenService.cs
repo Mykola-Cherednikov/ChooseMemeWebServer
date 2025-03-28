@@ -19,7 +19,10 @@ namespace ChooseMemeWebServer.Infrastructure.Services
             var token = new JwtSecurityToken(
                 issuer: jwtOptions.Value.Issuer,
                 audience: jwtOptions.Value.Audience,
-                claims: new List<Claim>(),
+                claims: new List<Claim>()
+                {
+                    new Claim("UserId", user.Id)
+                },
                 expires: DateTime.Now.AddMinutes(jwtOptions.Value.ExpiryInMinutes),
                 signingCredentials: creds);
 

@@ -27,4 +27,8 @@
 		<ProjectReference Include="..\ChooseMemeWebServer.Domain\ChooseMemeWebServer.Application.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="TestServices\" />
+	</ItemGroup>
+
 </Project>
